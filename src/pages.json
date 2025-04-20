@@ -6,13 +6,13 @@
     {
       "path": "pages/courses/courses",
       "style": {
-        "navigationBarTitleText": "课程",
+        "navigationBarTitleText": "课程"
       }
     },
     {
       "path": "pages/mine/mine",
       "style": {
-        "navigationBarTitleText": "我的",
+        "navigationBarTitleText": "我的"
       }
     },
     {
@@ -24,15 +24,13 @@
     {
       "path": "pages/login/login",
       "style": {
-        "navigationBarTitleText": "登录",
-        "navigationStyle": "custom"
+        "navigationBarTitleText": "登录"
       }
     },
     {
       "path": "pages/login/phoneLogin",
       "style": {
-        "navigationBarTitleText": "登录",
-        "navigationStyle": "custom"
+        "navigationBarTitleText": "登录"
       }
     },
     {
@@ -92,4 +90,4 @@
       }
     ]
   }
-} 
+}

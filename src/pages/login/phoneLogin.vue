@@ -1,21 +1,5 @@
 <template>
   <view class="phone-login-container">
-    <!-- 顶部导航栏 -->
-    <view class="header">
-      <view class="back-icon" @click="handleBack">
-        <view class="iconfont icon-fanhui"></view>
-      </view>
-      <text class="title">登录</text>
-      <view class="right-icons">
-        <view class="icon-more" @click="handleMore">
-          <text class="iconfont icon-more"></text>
-        </view>
-        <view class="icon-target" @click="handleTarget">
-          <text class="iconfont icon-circle"></text>
-        </view>
-      </view>
-    </view>
-    
     <!-- 主标题 -->
     <view class="main-title">
       <text>手机号登录/注册</text>
@@ -140,38 +124,6 @@ const validatePhone = () => {
   return true;
 };
 
-// 返回上一页
-const handleBack = () => {
-  console.log('返回上一页');
-  try {
-    const pages = getCurrentPages();
-    if (pages.length > 1) {
-      uni.navigateBack();
-    } else {
-      // 如果没有上一页，直接跳转到"我的"页面
-      uni.switchTab({
-        url: '/pages/mine/mine'
-      });
-    }
-  } catch (error) {
-    console.error('返回出错:', error);
-    // 出错时直接跳转到"我的"页面
-    uni.switchTab({
-      url: '/pages/mine/mine'
-    });
-  }
-};
-
-// 更多按钮点击
-const handleMore = () => {
-  console.log('点击了更多按钮');
-};
-
-// 目标按钮点击
-const handleTarget = () => {
-  console.log('点击了目标按钮');
-};
-
 // 选择国家区号
 const selectCountryCode = () => {
   console.log('选择国家区号');
@@ -293,49 +245,6 @@ const handlePrivacyPolicy = () => {
   background-color: #fff;
   padding-top: 50px; // 适配不同机型状态栏高度
   padding: 0 30rpx;
-}
-
-// 顶部导航栏
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 0;
-  position: relative;
-  
-  .back-icon {
-    position: absolute;
-    left: 0;
-    width: 40rpx;
-    height: 40rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .title {
-    font-size: 36rpx;
-    font-weight: 500;
-    color: #333;
-  }
-  
-  .right-icons {
-    position: absolute;
-    right: 0;
-    display: flex;
-    align-items: center;
-    
-    .icon-more {
-      margin-right: 15px;
-      display: flex;
-      align-items: center;
-    }
-    
-    .icon-target {
-      display: flex;
-      align-items: center;
-    }
-  }
 }
 
 // 主标题

@@ -1,21 +1,5 @@
 <template>
   <view class="login-container">
-    <!-- 顶部导航栏 -->
-    <view class="header">
-      <view class="back-icon" @click="handleBack">
-        <view class="iconfont icon-fanhui"></view>
-      </view>
-      <text class="title">登录</text>
-      <view class="right-icons">
-        <view class="icon-more" @click="handleMore">
-          <uni-icons type="more-filled" size="24" color="#333"></uni-icons>
-        </view>
-        <view class="icon-target" @click="handleTarget">
-          <uni-icons type="circle" size="24" color="#333"></uni-icons>
-        </view>
-      </view>
-    </view>
-
     <!-- 大众点评LOGO和slogan -->
     <view class="logo-section">
       <image
@@ -191,38 +175,6 @@ const getUseFileFunction = () => {
   });
 };
 
-// 返回上一页
-const handleBack = () => {
-  console.log("返回上一页");
-  try {
-    const pages = getCurrentPages();
-    if (pages.length > 1) {
-      uni.navigateBack();
-    } else {
-      // 如果没有上一页，直接跳转到"我的"页面
-      uni.switchTab({
-        url: "/pages/mine/mine",
-      });
-    }
-  } catch (error) {
-    console.error("返回出错:", error);
-    // 出错时直接跳转到"我的"页面
-    uni.switchTab({
-      url: "/pages/mine/mine",
-    });
-  }
-};
-
-// 更多按钮点击
-const handleMore = () => {
-  console.log("点击了更多按钮");
-};
-
-// 目标按钮点击
-const handleTarget = () => {
-  console.log("点击了目标按钮");
-};
-
 // 手机号一键登录
 const handleOneKeyLogin = () => {
   console.log("点击了手机号一键登录");
@@ -309,49 +261,6 @@ const handlePrivacyPolicy = () => {
   padding-top: 50px; // 适配不同机型状态栏高度
   display: flex;
   flex-direction: column;
-}
-
-// 顶部导航栏
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 20px;
-  position: relative;
-
-  .back-icon {
-    position: absolute;
-    left: 20px;
-    width: 40rpx;
-    height: 40rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .title {
-    font-size: 36rpx;
-    font-weight: 500;
-    color: #333;
-  }
-
-  .right-icons {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    align-items: center;
-
-    .icon-more {
-      margin-right: 15px;
-      display: flex;
-      align-items: center;
-    }
-
-    .icon-target {
-      display: flex;
-      align-items: center;
-    }
-  }
 }
 
 // LOGO区域
