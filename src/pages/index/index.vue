@@ -2,34 +2,16 @@
   <view class="content">
     <image class="logo" src="/static/logo.png"></image>
     <view class="text-area">
-      <text class="title">{{ title }}</text>
+      <text class="title">首页</text>
     </view>
-    <button class="nav-button" @click="navigateToCourses">查看课程列表</button>
-    <button class="nav-button mine-btn" @click="navigateToMine">我的</button>
+    <view class="description">
+      <text>这是应用的首页，可以通过底部选项卡导航到其他页面</text>
+    </view>
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      title: 'Hello',
-    }
-  },
-  onLoad() {},
-  methods: {
-    navigateToCourses() {
-      wx.navigateTo({
-        url: '/pages/courses/courses',  
-      })
-    },
-    navigateToMine() {
-      wx.navigateTo({
-        url: '/pages/mine/mine',  
-      })
-    }
-  },
-}
+<script setup>
+// 页面逻辑
 </script>
 
 <style>
@@ -38,6 +20,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 40rpx;
 }
 
 .logo {
@@ -52,23 +35,20 @@ export default {
 .text-area {
   display: flex;
   justify-content: center;
+  margin-bottom: 30rpx;
 }
 
 .title {
-  font-size: 36rpx;
-  color: #8f8f94;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
 }
 
-.nav-button {
-  margin-top: 50rpx;
-  background-color: #F7C06A;
-  color: #fff;
-  border-radius: 10rpx;
-  padding: 20rpx 40rpx;
-  font-size: 32rpx;
-}
-
-.mine-btn {
-  background-color: #5D8FFF;
+.description {
+  padding: 30rpx;
+  text-align: center;
+  color: #666;
+  font-size: 30rpx;
+  line-height: 1.5;
 }
 </style>

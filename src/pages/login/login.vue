@@ -31,6 +31,10 @@
         <text class="slogan-item">处</text>
       </view>
     </view>
+    <!-- 调试获取的用户昵称 -->
+    <view>
+      <text>用户昵称：{{ nickName || '暂无' }}</text>
+    </view>
 
     <!-- 登录按钮区域 -->
     <view class="login-buttons">
@@ -128,7 +132,7 @@
       </view>
     </view>
     <view>
-      <button @click="getUserInfo">调用wx.login方法</button>
+      <button @click="getUseFileFunction">调用wx.login方法</button>
     </view>
   </view>
 </template>
@@ -142,47 +146,51 @@ const isAgreed = ref(false);
 const showAgreementTip = ref(false);
 // 是否显示微信手机号弹窗
 const showWxPhonePopup = ref(false);
-// const getLoginMethods = () => {
-//   uni.login({
-//     timeout: 6000,
-//     success: (res) => {
-//       console.log("success:login方法返回的值：", res);
-//     },
-//     fail(err) {
-//       console.log("fail:login方法返回错误：", err);
-//     },
-//     complete(val) {
-//       console.log("complete:login方法完成后返回值", val);
-//     },
-//   });
-// };
+// 用户信息
+const nickName = ref('');
 
-const getUserInfo = () => {
-	uni.login({
-		success (res) {
-			console.log('login', res)
-			// 通过uni.login获取到临时登录凭证code
-			if (res.code) {
-				//发起网络请求
-				uni.request({
-					url: 'https://api.weixin.qq.com/sns/jscode2session',
-					data: {
-						appid: 'wxcbccf8cb6ce46d3c',
-						secret: '12c4f0d28c758d608c76527a0408ba47',
-						js_code: res.code, // wx.login登录code
-						grant_type: 'authorization_code' // 固定赋值
-					},
-					success(res) {
-						console.log('res', res)
-						// _this.openid = res.data.openid 
-					}
-				})
-			} else {
-				console.log('登录失败！' + res.errMsg)
-			}
-		}
-	})
-}
+const getUseFileFunction = () => {
+  uni.showModal({
+    title: "提示",
+    content: "这是一个模态弹窗",
+    success: function (res) {
+      if (res.confirm) {
+        console.log("用户点击确定");
+        uni.getUserProfile({
+          desc: "授权登录",
+          success: (userInfo) => {
+            console.log("用户信息：", userInfo);
+            
+            nickName.value = userInfo.userInfo.nickName
+            uni.login({
+              success: (res) => {
+                console.log("登录成功：", res);
+                uni.request({
+                  url: "https://api.weixin.qq.com/sns/jscode2session",
+                  data: {
+                    appid: "wxcbccf8cb6ce46d3c",
+                    secret: "12c4f0d28c758d608c76527a0408ba47",
+                    js_code: res.code, // wx.login登录code
+                    grant_type: "authorization_code", // 固定赋值
+                  },
+                  success: (res) => {
+                    console.log("请求成功：", res);
+                    // openid
+                    const openid = res.data.openid
+                    console.log("openid：", openid);
+                  },
+                });
+              },
+            });
+          },
+        });
+      } else if (res.cancel) {
+        console.log("用户点击取消");
+      }
+    },
+  });
+};
+
 // 返回上一页
 const handleBack = () => {
   console.log("返回上一页");
