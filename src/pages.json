@@ -31,6 +31,13 @@
       "style": {
         "navigationBarTitleText": "咖啡店详情"
       }
+    },
+    {
+      "path": "pages/review/review-list",
+      "style": {
+        "navigationBarTitleText": "全部评价",
+        "enablePullDownRefresh": false
+      }
     }
   ],
   "globalStyle": {

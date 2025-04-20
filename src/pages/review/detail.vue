@@ -99,19 +99,19 @@
         <text class="action-icon">❤️</text>
         <text class="action-text">收藏</text>
       </view>
-      <view class="action-btn order-btn" @click="handleOrder">去点单</view>
+      <view class="action-btn write-review-btn" @click="handleWriteReview">写评价</view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 const shopDetail = ref({
   id: 0,
   name: '瑞幸咖啡',
   rating: 4.1,
-  reviewCount: 20,
+  reviewCount: 0,
   price: 15,
   address: '上海市静安区南京西路1788号',
   phone: '400-100-xxxx',
@@ -144,8 +144,24 @@ const shopDetail = ref({
       date: '2023-11-25',
       text: '出品稳定，环境优美，就是有时人太多了',
       images: []
+    },
+    {
+      name: '匿名用户',
+      avatar: '/static/images/avatar-default.png',
+      level: 'Lv4',
+      date: '2月26日',
+      rating: 4.5,
+      text: '在食堂里面开的，没啥服务，做好了自己拿就行，味道还可以，价格还行，提神醒脑来一杯，环境还行，座位不多，做咖啡的速度还是挺快的，下单一会儿就做好了，可以快速拿到，不推荐饭点去，可能需要等，人会多一点，其他时候还好',
+      images: [
+        '/static/images/review-image.jpg'
+      ]
     }
   ]
+});
+
+// 计算总评价数
+const totalReviewCount = computed(() => {
+  return shopDetail.value.reviews.length;
 });
 
 onMounted(() => {
@@ -153,9 +169,10 @@ onMounted(() => {
   const app = getApp();
   if (app.globalData && app.globalData.tempData) {
     shopDetail.value = Object.assign({}, shopDetail.value, app.globalData.tempData);
-    // 使用完成后清空临时数据
-    app.globalData.tempData = {};
   }
+  
+  // 更新评价数量
+  shopDetail.value.reviewCount = totalReviewCount.value;
 });
 
 // 点击轮播图
@@ -171,9 +188,17 @@ const handleImageClick = (index) => {
 // 查看全部评价
 const viewAllReviews = () => {
   console.log('查看全部评价');
-  uni.showToast({
-    title: '暂未开放此功能',
-    icon: 'none'
+  
+  // 将评价数据存储到全局变量中
+  const app = getApp();
+  app.globalData.tempData = {
+    shopName: shopDetail.value.name,
+    reviews: shopDetail.value.reviews
+  };
+  
+  // 跳转到评价列表页
+  uni.navigateTo({
+    url: '/pages/review/review-list?shopId=' + shopDetail.value.id
   });
 };
 
@@ -255,11 +280,11 @@ const handleFavorite = () => {
   });
 };
 
-// 去点单
-const handleOrder = () => {
-  console.log('去点单');
+// 写评价
+const handleWriteReview = () => {
+  console.log('写评价');
   uni.showToast({
-    title: '即将跳转到点单页面',
+    title: '即将跳转到评价编写页面',
     icon: 'none'
   });
 };
@@ -532,7 +557,7 @@ const handleOrder = () => {
       }
     }
     
-    &.order-btn {
+    &.write-review-btn {
       flex: 1;
       margin-left: 30rpx;
       background-color: #f76c3f;
