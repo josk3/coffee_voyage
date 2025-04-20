@@ -29,10 +29,6 @@
       <!-- 订单标题和全部订单入口 -->
       <view class="section-header">
         <text class="section-title">我的订单</text>
-        <view class="all-orders" @click="handleOrderType('all')">
-          <text class="all-orders-text">全部订单</text>
-          <view class="iconfont icon-youjiantou"></view>
-        </view>
       </view>
 
       <!-- 订单类型菜单 -->
@@ -76,10 +72,6 @@
       <!-- 工具标题 -->
       <view class="section-header">
         <text class="section-title">必备工具</text>
-        <view class="all-tools" @click="handleToolType('all')">
-          <text class="all-tools-text">全部</text>
-          <view class="iconfont icon-youjiantou"></view>
-        </view>
       </view>
 
       <!-- 工具菜单 -->
@@ -87,7 +79,7 @@
         <!-- 企业服务 -->
         <view class="tool-item" @click="handleToolType('enterprise')">
           <view class="tool-icon">
-            <view class="icon-enterprise"></view>
+            <view class="iconfont icon-qiyefuwu"></view>
           </view>
           <text class="tool-text">企业服务</text>
         </view>
@@ -95,7 +87,7 @@
         <!-- 商家入驻 -->
         <view class="tool-item" @click="handleToolType('merchant')">
           <view class="tool-icon">
-            <view class="icon-merchant"></view>
+            <view class="iconfont icon-shangjiaruzhu"></view>
           </view>
           <text class="tool-text">商家入驻</text>
         </view>
@@ -103,7 +95,7 @@
         <!-- 联系客服 -->
         <view class="tool-item" @click="handleToolType('customer')">
           <view class="tool-icon">
-            <view class="icon-customer"></view>
+            <view class="iconfont icon-dianhua"></view>
           </view>
           <text class="tool-text">联系客服</text>
         </view>
@@ -115,20 +107,10 @@
       <!-- 功能标题和全部入口 -->
       <view class="section-header">
         <text class="section-title">常用功能</text>
-        <view class="all-functions" @click="handleFunction('all')">
-          <text class="all-functions-text">全部</text>
-          <view class="iconfont icon-youjiantou"></view>
-        </view>
       </view>
 
       <!-- 功能项列表 -->
       <view class="functions-menu">
-        <!-- 待评价 -->
-        <view class="function-item" @click="handleFunction('review')">
-          <text class="function-text">待评价</text>
-          <view class="iconfont icon-youjiantou"></view>
-        </view>
-
         <!-- 列表项分割线 -->
         <view class="item-divider"></view>
 
@@ -211,15 +193,15 @@ const handleFunction = (type) => {
     flex: 1;
 
     .login-text {
-      font-size: 36rpx;
-      font-weight: bold;
+      font-size: 48rpx;
+      font-weight: 450;
       color: #333;
       margin-bottom: 8rpx;
     }
 
     .login-desc {
-      font-size: 28rpx;
-      color: #999;
+      font-size: 26rpx;
+      color: #333;
     }
   }
 
@@ -232,14 +214,8 @@ const handleFunction = (type) => {
     }
 
     .profile-text {
-      font-size: 28rpx;
+      font-size: 26rpx;
       color: #999;
-    }
-
-    .arrow {
-      margin-left: 6rpx;
-      font-size: 28rpx;
-      color: #ccc;
     }
   }
 }
@@ -258,7 +234,7 @@ const handleFunction = (type) => {
     padding-bottom: 20rpx;
 
     .section-title {
-      font-size: 32rpx;
+      font-size: 30rpx;
       font-weight: 500;
       color: #333;
     }
@@ -309,7 +285,7 @@ const handleFunction = (type) => {
       }
 
       .order-text {
-        font-size: 24rpx;
+        font-size: 26rpx;
         color: #333;
       }
     }
@@ -330,7 +306,7 @@ const handleFunction = (type) => {
     padding-bottom: 20rpx;
 
     .section-title {
-      font-size: 32rpx;
+      font-size: 30rpx;
       font-weight: 500;
       color: #333;
     }
@@ -373,6 +349,10 @@ const handleFunction = (type) => {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .iconfont {
+          font-size: 48rpx;
+        }
 
         // 企业服务图标
         .icon-enterprise {
@@ -482,7 +462,7 @@ const handleFunction = (type) => {
     padding-bottom: 20rpx;
 
     .section-title {
-      font-size: 32rpx;
+      font-size: 30rpx;
       font-weight: 500;
       color: #333;
     }
@@ -524,7 +504,7 @@ const handleFunction = (type) => {
       }
 
       .function-text {
-        font-size: 30rpx;
+        font-size: 26rpx;
         color: #333;
       }
 
