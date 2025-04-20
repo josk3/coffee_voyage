@@ -202,7 +202,7 @@ const goToDetail = (item) => {
 }
 
 .coffee-name {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: bold;
   color: #333;
   margin-bottom: 15rpx;
@@ -263,27 +263,29 @@ const goToDetail = (item) => {
 .review-content {
   display: flex;
   margin-top: 10rpx;
+  min-height: 50rpx;
+  align-items: center;
   
   .reviewer-avatar {
     width: 50rpx;
     height: 50rpx;
     border-radius: 50%;
     margin-right: 15rpx;
-    flex-shrink: 0; /* 防止头像被挤压 */
-    background-color: #eee; // 占位背景色
+    flex-shrink: 0;
+    background-color: #eee;
   }
   
   .review-text {
     font-size: 28rpx;
     color: #666;
     line-height: 1.4;
-    flex: 1; /* 占据剩余空间 */
-    word-break: break-all; /* 允许在任意字符间断行 */
+    flex: 1;
+    word-break: break-all;
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* 最多显示两行 */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis; /* 超出部分显示省略号 */
+    text-overflow: ellipsis;
   }
 }
 </style> 
