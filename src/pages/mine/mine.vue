@@ -1,20 +1,5 @@
 <template>
   <view class="mine-container">
-    <!-- 顶部标题栏 -->
-    <view class="header">
-      <text class="title">我的</text>
-      <view class="header-right">
-        <view class="icon more" @click="handleClickMore">
-          <text class="dot"></text>
-          <text class="dot"></text>
-          <text class="dot"></text>
-        </view>
-        <view class="icon setting" @click="handleClickSetting">
-          <view class="circle"></view>
-        </view>
-      </view>
-    </view>
-    
     <!-- 未登录状态的用户信息区 -->
     <view class="user-info" @click="handleLogin">
       <!-- 默认头像 -->
@@ -157,15 +142,6 @@
 <script setup>
 import { ref } from 'vue';
 
-// 点击事件处理函数
-const handleClickMore = () => {
-  console.log('点击了更多按钮');
-};
-
-const handleClickSetting = () => {
-  console.log('点击了设置按钮');
-};
-
 // 点击登录处理函数
 const handleLogin = () => {
   console.log('点击了登录区域，跳转到登录页面');
@@ -197,62 +173,7 @@ const handleFunction = (type) => {
 .mine-container {
   min-height: 100vh;
   background-color: #f5f5f5;
-  padding-top: 50px; // 适配不同机型状态栏高度
-}
-
-// 顶部标题栏
-.header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  padding: 10px 20px;
-  
-  .title {
-    font-size: 38rpx;
-    font-weight: 500;
-    color: #000;
-  }
-  
-  .header-right {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    
-    .icon {
-      width: 60rpx;
-      height: 60rpx;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      
-      &.more {
-        margin-right: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 30rpx;
-        
-        .dot {
-          width: 6px;
-          height: 6px;
-          background-color: #000;
-          border-radius: 50%;
-          margin: 2px 0;
-        }
-      }
-      
-      &.setting {
-        .circle {
-          width: 44rpx;
-          height: 44rpx;
-          border: 3px solid #000;
-          border-radius: 50%;
-        }
-      }
-    }
-  }
+  padding-top: 30px; // 调整顶部间距
 }
 
 // 用户信息区
