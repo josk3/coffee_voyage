@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <view class="nav-header">
       <view class="left" @click="handleCancel">取消</view>
-      <view class="title">瑞幸咖啡</view>
+      <view class="title">{{ shopName }}</view>
       <view class="right" @click="handlePublish" :class="{ 'active': canPublish }">发布</view>
     </view>
     
@@ -72,14 +72,17 @@
 import { ref, computed, onMounted } from 'vue';
 
 // 店铺信息
-const shopName = ref('瑞幸咖啡');
-const shopId = ref(0);
+const shopName = ref('');
+const shopId = ref('');
 const shopAddress = ref('');
 
 // 评价内容
 const reviewText = ref('');
 const uploadedImages = ref([]);
 const isAnonymous = ref(false);
+
+// 上传中图片的数量
+const uploadingCount = ref(0);
 
 // 判断是否可以发布
 const canPublish = computed(() => {
@@ -99,9 +102,100 @@ const chooseImage = () => {
     sizeType: ['compressed'],
     sourceType: ['album', 'camera'],
     success: (res) => {
+      console.log('选择图片成功:', res.tempFilePaths);
       // 将选择的图片添加到已上传列表中
       uploadedImages.value = [...uploadedImages.value, ...res.tempFilePaths];
+      
+      // 实际应用中应该上传图片到服务器
+      // uploadImages(res.tempFilePaths);
     }
+  });
+};
+
+// 上传图片到服务器
+const uploadImages = (imagePaths) => {
+  // 增加上传中计数
+  uploadingCount.value += imagePaths.length;
+  
+  // 显示上传中提示
+  uni.showLoading({
+    title: '上传中...',
+    mask: true
+  });
+  
+  // 遍历图片路径进行上传
+  const uploadPromises = imagePaths.map(path => {
+    return new Promise((resolve, reject) => {
+      // 模拟上传成功
+      setTimeout(() => {
+        resolve({ path, success: true, url: path });
+      }, 1000);
+      
+      // 实际接口调用
+      // uni.uploadFile({
+      //   url: 'https://api.example.com/upload/image',
+      //   filePath: path,
+      //   name: 'file',
+      //   formData: {
+      //     'shopId': shopId.value,
+      //     'type': 'review'
+      //   },
+      //   success: (res) => {
+      //     const data = JSON.parse(res.data);
+      //     if (data.success) {
+      //       resolve({
+      //         path,
+      //         success: true,
+      //         url: data.url // 服务器返回的图片URL
+      //       });
+      //     } else {
+      //       reject({
+      //         path,
+      //         success: false,
+      //         message: data.message || '上传失败'
+      //       });
+      //     }
+      //   },
+      //   fail: (err) => {
+      //     reject({
+      //       path,
+      //       success: false,
+      //       message: '网络错误'
+      //     });
+      //   }
+      // });
+    });
+  });
+  
+  // 等待所有图片上传完成
+  Promise.allSettled(uploadPromises).then(results => {
+    // 减少上传中计数
+    uploadingCount.value -= imagePaths.length;
+    
+    // 隐藏加载提示
+    if (uploadingCount.value === 0) {
+      uni.hideLoading();
+    }
+    
+    // 处理上传结果
+    results.forEach(result => {
+      if (result.status === 'fulfilled' && result.value.success) {
+        // 上传成功的处理
+        console.log('图片上传成功:', result.value.url);
+        // 实际应用中替换本地路径为服务器URL
+        // const index = uploadedImages.value.findIndex(img => img === result.value.path);
+        // if (index !== -1) {
+        //   uploadedImages.value[index] = result.value.url;
+        // }
+      } else {
+        // 上传失败的处理
+        console.error('图片上传失败:', result.reason?.message || '未知错误');
+        uni.showToast({
+          title: result.reason?.message || '图片上传失败',
+          icon: 'none'
+        });
+      }
+    });
   });
 };
 
@@ -138,10 +232,30 @@ const handlePublish = () => {
     return;
   }
   
-  // 显示加载中
+  // 如果有图片正在上传，提示等待
+  if (uploadingCount.value > 0) {
+    uni.showToast({
+      title: '图片上传中，请稍候',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  // 展示提交中加载框
   uni.showLoading({
-    title: '发布中...'
+    title: '发布中...',
+    mask: true
   });
+  
+  // 准备提交的数据
+  const reviewData = {
+    shopId: shopId.value,
+    content: reviewText.value,
+    isAnonymous: isAnonymous.value,
+    images: uploadedImages.value
+  };
+  
+  console.log('提交的评价数据:', reviewData);
   
   // 模拟提交数据
   setTimeout(() => {
@@ -158,19 +272,129 @@ const handlePublish = () => {
     // 延迟返回上一页
     setTimeout(() => {
       uni.navigateBack({
-        delta: 1
+        delta: 1,
+        success: () => {
+          // 可以通过事件总线或全局状态更新上一页的评价列表
+          // 例如: uni.$emit('reviewAdded', reviewData);
+        }
       });
     }, 1500);
   }, 1500);
+  
+  // 实际接口调用
+  // uni.request({
+  //   url: 'https://api.example.com/review/submit',
+  //   method: 'POST',
+  //   data: reviewData,
+  //   success: (res) => {
+  //     uni.hideLoading();
+  //     
+  //     if (res.data.success) {
+  //       // 提交成功
+  //       uni.showToast({
+  //         title: '发布成功',
+  //         icon: 'success',
+  //         duration: 2000
+  //       });
+  //       
+  //       // 延迟返回上一页
+  //       setTimeout(() => {
+  //         uni.navigateBack({
+  //           delta: 1,
+  //           success: () => {
+  //             // 可以通过事件总线或全局状态更新上一页的评价列表
+  //             // 例如: uni.$emit('reviewAdded', reviewData);
+  //           }
+  //         });
+  //       }, 1500);
+  //     } else {
+  //       // 提交失败
+  //       uni.showToast({
+  //         title: res.data.message || '发布失败，请重试',
+  //         icon: 'none'
+  //       });
+  //     }
+  //   },
+  //   fail: () => {
+  //     uni.hideLoading();
+  //     uni.showToast({
+  //       title: '网络错误，请重试',
+  //       icon: 'none'
+  //     });
+  //   }
+  // });
 };
 
 onMounted(() => {
+  console.log('写评价页面已加载');
+  
   // 获取页面参数
   const query = uni.$route ? uni.$route.query : uni.getEnterOptionsSync().query;
-  shopId.value = query.shopId || 0;
-  shopName.value = query.shopName || '瑞幸咖啡';
-  shopAddress.value = query.shopAddress || '';
+  console.log('页面参数:', query);
+  
+  // 首先尝试从全局数据获取店铺信息
+  const app = getApp();
+  if (app.globalData && app.globalData.shopInfo) {
+    console.log('从全局数据获取店铺信息:', app.globalData.shopInfo);
+    shopId.value = app.globalData.shopInfo.id;
+    shopName.value = app.globalData.shopInfo.name;
+    shopAddress.value = app.globalData.shopInfo.address;
+  } 
+  // 如果全局数据中没有，尝试从URL参数获取
+  else if (query) {
+    // 获取店铺ID
+    if (query.shopId) {
+      shopId.value = query.shopId;
+    }
+    
+    // 获取店铺名称，URL解码
+    if (query.shopName) {
+      try {
+        shopName.value = decodeURIComponent(query.shopName);
+        console.log('解码后的店铺名称:', shopName.value);
+      } catch (e) {
+        // 如果解码失败，直接使用原始值
+        shopName.value = query.shopName;
+        console.error('店铺名称解码失败:', e);
+      }
+    }
+    
+    // 获取店铺地址，URL解码
+    if (query.shopAddress) {
+      try {
+        shopAddress.value = decodeURIComponent(query.shopAddress);
+      } catch (e) {
+        shopAddress.value = query.shopAddress;
+        console.error('店铺地址解码失败:', e);
+      }
+    }
+  }
+  
+  // 如果没有获取到店铺名称，设置默认值
+  if (!shopName.value) {
+    shopName.value = '咖啡店';
+  }
+  
+  console.log('当前店铺:', shopName.value, '店铺ID:', shopId.value);
+  
+  // 可以在这里获取用户信息等
+  // getUserInfo();
 });
+
+// 获取用户信息
+const getUserInfo = () => {
+  // 实际接口调用
+  // uni.request({
+  //   url: 'https://api.example.com/user/info',
+  //   method: 'GET',
+  //   success: (res) => {
+  //     if (res.data.success) {
+  //       // 可以根据用户信息来处理界面显示
+  //       console.log('用户信息:', res.data.user);
+  //     }
+  //   }
+  // });
+};
 </script>
 
 <style lang="scss">

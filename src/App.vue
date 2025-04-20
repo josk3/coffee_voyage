@@ -1,7 +1,8 @@
 <script>
 export default {
   globalData: {
-    tempData: {}
+    tempData: {},
+    shopInfo: null  // 存储店铺信息
   },
   onLaunch: function () {
     console.log('App Launch')
@@ -17,5 +18,5 @@ export default {
 
 <style>
 /*每个页面公共css */
-  @import url("static/iconfonts/iconfont.wxss");
+  @import './static/fonts/iconfont.css';
 </style>

@@ -329,9 +329,27 @@ const handleFavorite = () => {
 const handleWriteReview = () => {
   console.log('写评价');
   
-  // 跳转到评价编写页面，传递店铺信息
+  // 从console中检查shopDetail的name值
+  console.log('店铺信息:', shopDetail.value.name, shopDetail.value.id);
+  
+  // 将店铺信息存储到全局变量中
+  const app = getApp();
+  if (!app.globalData) {
+    app.globalData = {};
+  }
+  
+  // 使用全局数据传递商店信息
+  app.globalData.shopInfo = {
+    id: shopDetail.value.id,
+    name: shopDetail.value.name,
+    address: shopDetail.value.address
+  };
+  
+  console.log('全局数据已设置:', app.globalData.shopInfo);
+  
+  // 直接跳转到写评价页面，无需传递复杂参数
   uni.navigateTo({
-    url: `/pages/review/write-review?shopId=${shopDetail.value.id}&shopName=${encodeURIComponent(shopDetail.value.name)}&shopAddress=${encodeURIComponent(shopDetail.value.address)}`
+    url: '/pages/review/write-review'
   });
 };
 
