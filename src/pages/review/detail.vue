@@ -50,6 +50,23 @@
       </view>
     </view>
     
+    <!-- 推荐菜区域 -->
+    <view class="recommend-section">
+      <view class="section-header">
+        <text class="section-title">推荐菜</text>
+        <text class="view-all" @click="viewAllRecommends">查看全部 ></text>
+      </view>
+      
+      <scroll-view class="recommend-scroll" scroll-x="true" show-scrollbar="false">
+        <view class="recommend-list">
+          <view class="recommend-item" v-for="(item, index) in recommendItems" :key="index" @click="viewRecommendDetail(item)">
+            <image :src="item.image" mode="aspectFill" class="recommend-image"></image>
+            <text class="recommend-name">{{ item.name }}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+    
     <!-- 评价区域 -->
     <view class="reviews-section">
       <view class="section-header">
@@ -158,6 +175,34 @@ const shopDetail = ref({
     }
   ]
 });
+
+// 推荐菜数据
+const recommendItems = ref([
+  {
+    id: 1,
+    name: '小黄油拿铁',
+    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    price: 25
+  },
+  {
+    id: 2,
+    name: '太妃榛香拿铁',
+    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    price: 28
+  },
+  {
+    id: 3,
+    name: '费尔岛拿铁',
+    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    price: 30
+  },
+  {
+    id: 4,
+    name: '西梅拿铁',
+    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    price: 26
+  }
+]);
 
 // 计算总评价数
 const totalReviewCount = computed(() => {
@@ -287,6 +332,24 @@ const handleWriteReview = () => {
   // 跳转到评价编写页面，传递店铺信息
   uni.navigateTo({
     url: `/pages/review/write-review?shopId=${shopDetail.value.id}&shopName=${encodeURIComponent(shopDetail.value.name)}&shopAddress=${encodeURIComponent(shopDetail.value.address)}`
+  });
+};
+
+// 查看全部推荐菜
+const viewAllRecommends = () => {
+  console.log('查看全部推荐菜');
+  uni.showToast({
+    title: '即将查看全部推荐菜',
+    icon: 'none'
+  });
+};
+
+// 查看推荐菜详情
+const viewRecommendDetail = (item) => {
+  console.log('查看推荐菜详情:', item.name);
+  uni.showToast({
+    title: `查看${item.name}详情`,
+    icon: 'none'
   });
 };
 </script>
@@ -428,6 +491,66 @@ const handleWriteReview = () => {
     .promo-desc {
       font-size: 28rpx;
       color: #333;
+    }
+  }
+}
+
+.recommend-section {
+  background-color: #fff;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20rpx;
+    
+    .section-title {
+      font-size: 32rpx;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .view-all {
+      font-size: 28rpx;
+      color: #666;
+    }
+  }
+  
+  .recommend-scroll {
+    width: 100%;
+    white-space: nowrap;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  
+  .recommend-list {
+    display: inline-flex;
+    padding: 10rpx 0;
+  }
+  
+  .recommend-item {
+    display: inline-block;
+    width: 240rpx;
+    margin-right: 20rpx;
+    
+    .recommend-image {
+      width: 240rpx;
+      height: 180rpx;
+      border-radius: 8rpx;
+    }
+    
+    .recommend-name {
+      display: block;
+      font-size: 28rpx;
+      color: #333;
+      margin-top: 12rpx;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
