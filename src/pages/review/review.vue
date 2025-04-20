@@ -120,10 +120,45 @@ const coffeeShops = ref([
 // 跳转到详情页
 const goToDetail = (item) => {
   console.log('查看咖啡店详情:', item.name);
-  // 这里可以添加页面跳转逻辑
-  // uni.navigateTo({
-  //   url: `/pages/coffee-detail/coffee-detail?id=${item.id}`
-  // });
+  
+  // 构建需要传递的数据对象
+  const itemData = {
+    id: item.id,
+    name: item.name,
+    rating: item.rating,
+    reviewCount: item.reviewCount,
+    price: item.price,
+    logo: item.logo,
+    address: '上海市静安区南京西路1788号', // 示例地址，实际应从item中获取
+    phone: '400-100-xxxx', // 示例电话，实际应从item中获取
+    images: [
+      item.logo, 
+      item.logo, 
+      item.logo
+    ], // 使用logo作为轮播图示例，实际应从item中获取多张图片
+    promotions: [
+      { type: '券', description: '新用户立减5元' },
+      { type: '折', description: '下单立减2元' }
+    ], // 示例优惠信息，实际应从item中获取
+    reviews: [
+      {
+        name: item.reviewer.name,
+        avatar: item.reviewer.avatar,
+        rating: item.rating,
+        date: '2023-12-01', // 示例日期，实际应从item中获取
+        text: item.reviewText,
+        images: []
+      }
+    ] // 示例评论，使用item中的评论信息
+  };
+  
+  // 通过globalData传递数据
+  getApp().globalData.tempData = itemData;
+  
+  // 跳转到详情页，只传递一个ID参数
+  uni.navigateTo({
+    url: `/pages/review/detail?id=${item.id}`
+  });
 };
 </script>
 

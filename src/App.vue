@@ -1,5 +1,8 @@
 <script>
 export default {
+  globalData: {
+    tempData: {}
+  },
   onLaunch: function () {
     console.log('App Launch')
   },
