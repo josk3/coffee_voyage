@@ -18,5 +18,5 @@ export default {
 
 <style>
 /*每个页面公共css */
-  @import './static/fonts/iconfont.css';
+  @import url("static/fonts/iconfont.wxss");
 </style>

@@ -646,6 +646,8 @@ const viewRecommendDetail = (item) => {
       color: #333;
       line-height: 1.5;
       margin-bottom: 15rpx;
+      word-break: break-word;
+      white-space: normal;
     }
     
     .review-images {

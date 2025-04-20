@@ -99,7 +99,7 @@ const coffeeShops = ref([
       name: '用户3',
       avatar: '/static/images/avatar-default.png' // 占位图片路径
     },
-    reviewText: '很喜欢这个店的位置,店内装修简洁敞亮'
+    reviewText: '很喜欢这个店的位置,店内装修简洁敞亮,店内装修简洁敞亮店内装修简洁敞亮店内装修简洁敞亮'
   },
   {
     id: 4,
@@ -262,13 +262,14 @@ const goToDetail = (item) => {
 
 .review-content {
   display: flex;
-  align-items: center;
+  margin-top: 10rpx;
   
   .reviewer-avatar {
     width: 50rpx;
     height: 50rpx;
     border-radius: 50%;
     margin-right: 15rpx;
+    flex-shrink: 0; /* 防止头像被挤压 */
     background-color: #eee; // 占位背景色
   }
   
@@ -276,6 +277,13 @@ const goToDetail = (item) => {
     font-size: 28rpx;
     color: #666;
     line-height: 1.4;
+    flex: 1; /* 占据剩余空间 */
+    word-break: break-all; /* 允许在任意字符间断行 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 最多显示两行 */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis; /* 超出部分显示省略号 */
   }
 }
 </style> 

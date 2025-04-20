@@ -238,6 +238,8 @@ onMounted(() => {
       color: #333;
       line-height: 1.6;
       margin-bottom: 20rpx;
+      word-break: break-word;
+      white-space: normal;
     }
     
     .review-images {
