@@ -38,6 +38,13 @@
         "navigationBarTitleText": "全部评价",
         "enablePullDownRefresh": false
       }
+    },
+    {
+      "path": "pages/review/write-review",
+      "style": {
+        "navigationBarTitleText": "写评价",
+        "navigationStyle": "custom"
+      }
     }
   ],
   "globalStyle": {

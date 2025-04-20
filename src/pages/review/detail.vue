@@ -283,9 +283,10 @@ const handleFavorite = () => {
 // 写评价
 const handleWriteReview = () => {
   console.log('写评价');
-  uni.showToast({
-    title: '即将跳转到评价编写页面',
-    icon: 'none'
+  
+  // 跳转到评价编写页面，传递店铺信息
+  uni.navigateTo({
+    url: `/pages/review/write-review?shopId=${shopDetail.value.id}&shopName=${encodeURIComponent(shopDetail.value.name)}&shopAddress=${encodeURIComponent(shopDetail.value.address)}`
   });
 };
 </script>
