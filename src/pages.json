@@ -4,13 +4,22 @@
       "path": "pages/index/index"
     },
     {
-      "path": "pages/courses/courses"
+      "path": "pages/courses/courses",
+      "style": {
+        "navigationBarTitleText": "课程",
+      }
     },
     {
-      "path": "pages/mine/mine"
+      "path": "pages/mine/mine",
+      "style": {
+        "navigationBarTitleText": "我的",
+      }
     },
     {
-      "path": "pages/review/review"
+      "path": "pages/review/review",
+      "style": {
+        "navigationBarTitleText": "评价"
+      }
     },
     {
       "path": "pages/login/login",

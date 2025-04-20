@@ -20,7 +20,7 @@
     <view class="logo-section">
       <image
         class="logo"
-        src="/static/images/dianping-logo.png"
+        src="https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp"
         mode="aspectFit"
       ></image>
       <view class="slogan">

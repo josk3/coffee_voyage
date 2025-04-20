@@ -69,7 +69,7 @@ const coffeeShops = ref([
     reviewer: {
       id: 101,
       name: '用户1',
-      avatar: '/static/images/avatar-default.png' // 占位图片路径
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
     },
     reviewText: '环境很好,服务员很热情,推荐大家来'
   },
@@ -83,7 +83,7 @@ const coffeeShops = ref([
     reviewer: {
       id: 102,
       name: '用户2',
-      avatar: '/static/images/avatar-default.png' // 占位图片路径
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
     },
     reviewText: '出品稳定,环境优美'
   },
@@ -97,7 +97,7 @@ const coffeeShops = ref([
     reviewer: {
       id: 103,
       name: '用户3',
-      avatar: '/static/images/avatar-default.png' // 占位图片路径
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
     },
     reviewText: '很喜欢这个店的位置,店内装修简洁敞亮,店内装修简洁敞亮店内装修简洁敞亮店内装修简洁敞亮'
   },
@@ -111,7 +111,7 @@ const coffeeShops = ref([
     reviewer: {
       id: 104,
       name: '用户4',
-      avatar: '/static/images/avatar-default.png' // 占位图片路径
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
     },
     reviewText: '服务很专业'
   }

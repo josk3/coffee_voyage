@@ -145,7 +145,7 @@ const shopDetail = ref({
   reviews: [
     {
       name: '用户1',
-      avatar: '/static/images/avatar-default.png',
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
       rating: 5,
       date: '2023-12-01',
       text: '环境很好，服务员很热情，推荐大家来。咖啡味道醇厚，价格也实惠，下次还会再来的。',
@@ -156,7 +156,7 @@ const shopDetail = ref({
     },
     {
       name: '用户2',
-      avatar: '/static/images/avatar-default.png',
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
       rating: 4,
       date: '2023-11-25',
       text: '出品稳定，环境优美，就是有时人太多了',
@@ -164,13 +164,13 @@ const shopDetail = ref({
     },
     {
       name: '匿名用户',
-      avatar: '/static/images/avatar-default.png',
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
       level: 'Lv4',
       date: '2月26日',
       rating: 4.5,
       text: '在食堂里面开的，没啥服务，做好了自己拿就行，味道还可以，价格还行，提神醒脑来一杯，环境还行，座位不多，做咖啡的速度还是挺快的，下单一会儿就做好了，可以快速拿到，不推荐饭点去，可能需要等，人会多一点，其他时候还好',
       images: [
-        '/static/images/review-image.jpg'
+        'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg'
       ]
     }
   ]

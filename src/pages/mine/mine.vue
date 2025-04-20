@@ -4,7 +4,7 @@
     <view class="user-info" @click="handleLogin">
       <!-- 默认头像 -->
       <view class="avatar-container">
-        <image class="avatar" src="/static/images/avatar-default.png" mode="aspectFill"></image>
+        <image class="avatar" src="https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp" mode="aspectFill"></image>
       </view>
       
       <!-- 登录文本区域 -->
@@ -173,7 +173,6 @@ const handleFunction = (type) => {
 .mine-container {
   min-height: 100vh;
   background-color: #f5f5f5;
-  padding-top: 30px; // 调整顶部间距
 }
 
 // 用户信息区

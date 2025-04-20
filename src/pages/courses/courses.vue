@@ -54,7 +54,7 @@ const courseList = ref([
     location: '徐汇区上海南站地铁站教学点',
     tutor: {
       name: '总部特派教师1',
-      avatar: '/static/images/avatar1.png'
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp'
     },
     tag: '剩余5',
     price: '20555'
@@ -67,7 +67,7 @@ const courseList = ref([
     classSize: '大班',
     tutor: {
       name: '徐忆宁 ellen',
-      avatar: '/static/images/avatar2.png'
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp'
     },
     price: '1950'
   },
@@ -79,7 +79,7 @@ const courseList = ref([
     classSize: '大班',
     tutor: {
       name: '讲师',
-      avatar: '/static/images/avatar3.png'
+      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp'
     },
     price: '1950'
   }
