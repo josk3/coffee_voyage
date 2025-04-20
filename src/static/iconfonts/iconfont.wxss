@@ -1,9 +1,8 @@
-/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
-  font-family: 'iconfont';  /* Project id 4899693 */
-  src: url('//at.alicdn.com/t/c/font_4899693_iz4nd9vfjrl.woff2?t=1745142489343') format('woff2'),
-       url('//at.alicdn.com/t/c/font_4899693_iz4nd9vfjrl.woff?t=1745142489343') format('woff'),
-       url('//at.alicdn.com/t/c/font_4899693_iz4nd9vfjrl.ttf?t=1745142489343') format('truetype');
+  font-family: "iconfont"; /* Project id 4899693 */
+  src: url('//at.alicdn.com/t/c/font_4899693_k81t40z2mkf.woff2?t=1745176933311') format('woff2'),
+       url('//at.alicdn.com/t/c/font_4899693_k81t40z2mkf.woff?t=1745176933311') format('woff'),
+       url('//at.alicdn.com/t/c/font_4899693_k81t40z2mkf.ttf?t=1745176933311') format('truetype');
 }
 
 .iconfont {
@@ -12,6 +11,34 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-youjiantou:before {
+  content: "\e60b";
+}
+
+.icon-31daipingjia:before {
+  content: "\e603";
+}
+
+.icon-fenxiang:before {
+  content: "\e614";
+}
+
+.icon-31daifahuo:before {
+  content: "\e600";
+}
+
+.icon-31daifukuan:before {
+  content: "\e601";
+}
+
+.icon-daishouhuo:before {
+  content: "\e604";
+}
+
+.icon-shoucang:before {
+  content: "\e613";
 }
 
 .icon-danxuan_weixuanzhong:before {

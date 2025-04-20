@@ -4,25 +4,26 @@
     <view class="user-info" @click="handleLogin">
       <!-- 默认头像 -->
       <view class="avatar-container">
-        <image class="avatar" src="https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp" mode="aspectFill"></image>
+        <image
+          class="avatar"
+          src="https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp"
+          mode="aspectFill"
+        ></image>
       </view>
-      
+
       <!-- 登录文本区域 -->
       <view class="login-info">
         <view class="login-text">点击登录</view>
         <view class="login-desc">登录更精彩</view>
       </view>
-      
+
       <!-- 个人主页箭头 -->
       <view class="profile-link">
         <text class="profile-text">个人主页</text>
-        <text class="arrow">></text>
+        <view class="iconfont icon-youjiantou"></view>
       </view>
     </view>
-    
-    <!-- 内容分割线 -->
-    <view class="divider"></view>
-    
+
     <!-- 我的订单部分 -->
     <view class="order-section">
       <!-- 订单标题和全部订单入口 -->
@@ -30,56 +31,57 @@
         <text class="section-title">我的订单</text>
         <view class="all-orders" @click="handleOrderType('all')">
           <text class="all-orders-text">全部订单</text>
-          <text class="all-orders-arrow">></text>
+          <view class="iconfont icon-youjiantou"></view>
         </view>
       </view>
-      
+
       <!-- 订单类型菜单 -->
       <view class="order-menu">
         <!-- 待付款 -->
         <view class="order-item" @click="handleOrderType('pending')">
           <view class="order-icon">
-            <uni-icons type="wallet" size="24" color="#333"></uni-icons>
+            <view class="iconfont icon-31daifukuan"></view>
           </view>
           <text class="order-text">待付款</text>
         </view>
-        
+
         <!-- 待发货 -->
         <view class="order-item" @click="handleOrderType('shipping')">
           <view class="order-icon">
-            <uni-icons type="shop" size="24" color="#333"></uni-icons>
+            <view class="iconfont icon-31daifahuo"></view>
           </view>
           <text class="order-text">待发货</text>
         </view>
-        
+
         <!-- 待收货 -->
         <view class="order-item" @click="handleOrderType('receiving')">
           <view class="order-icon">
-            <uni-icons type="cart" size="24" color="#333"></uni-icons>
+            <view class="iconfont icon-31daifahuo"></view>
           </view>
           <text class="order-text">待收货</text>
         </view>
-        
+
         <!-- 待评价 -->
         <view class="order-item" @click="handleOrderType('review')">
           <view class="order-icon">
-            <uni-icons type="chat" size="24" color="#333"></uni-icons>
+            <view class="iconfont icon-31daipingjia"></view>
           </view>
           <text class="order-text">待评价</text>
         </view>
       </view>
     </view>
-    
-    <!-- 内容分割线 -->
-    <view class="divider"></view>
-    
+
     <!-- 必备工具部分 -->
     <view class="tools-section">
       <!-- 工具标题 -->
-      <view class="section-title">
-        <text>必备工具</text>
+      <view class="section-header">
+        <text class="section-title">必备工具</text>
+        <view class="all-tools" @click="handleToolType('all')">
+          <text class="all-tools-text">全部</text>
+          <view class="iconfont icon-youjiantou"></view>
+        </view>
       </view>
-      
+
       <!-- 工具菜单 -->
       <view class="tools-menu">
         <!-- 企业服务 -->
@@ -89,7 +91,7 @@
           </view>
           <text class="tool-text">企业服务</text>
         </view>
-        
+
         <!-- 商家入驻 -->
         <view class="tool-item" @click="handleToolType('merchant')">
           <view class="tool-icon">
@@ -97,7 +99,7 @@
           </view>
           <text class="tool-text">商家入驻</text>
         </view>
-        
+
         <!-- 联系客服 -->
         <view class="tool-item" @click="handleToolType('customer')">
           <view class="tool-icon">
@@ -107,68 +109,74 @@
         </view>
       </view>
     </view>
-    
-    <!-- 内容分割线 -->
-    <view class="divider"></view>
-    
+
     <!-- 功能列表部分 -->
     <view class="function-list">
-      <!-- 待评价 -->
-      <view class="function-item" @click="handleFunction('review')">
-        <text class="function-text">待评价</text>
-        <text class="function-arrow">></text>
+      <!-- 功能标题和全部入口 -->
+      <view class="section-header">
+        <text class="section-title">常用功能</text>
+        <view class="all-functions" @click="handleFunction('all')">
+          <text class="all-functions-text">全部</text>
+          <view class="iconfont icon-youjiantou"></view>
+        </view>
       </view>
-      
-      <!-- 列表项分割线 -->
-      <view class="item-divider"></view>
-      
-      <!-- 收藏 -->
-      <view class="function-item" @click="handleFunction('favorite')">
-        <text class="function-text">收藏</text>
-        <text class="function-arrow">></text>
-      </view>
-      
-      <!-- 列表项分割线 -->
-      <view class="item-divider"></view>
-      
-      <!-- 隐私管理 -->
-      <view class="function-item" @click="handleFunction('privacy')">
-        <text class="function-text">隐私管理</text>
-        <text class="function-arrow">></text>
+
+      <!-- 功能项列表 -->
+      <view class="functions-menu">
+        <!-- 待评价 -->
+        <view class="function-item" @click="handleFunction('review')">
+          <text class="function-text">待评价</text>
+          <view class="iconfont icon-youjiantou"></view>
+        </view>
+
+        <!-- 列表项分割线 -->
+        <view class="item-divider"></view>
+
+        <!-- 收藏 -->
+        <view class="function-item" @click="handleFunction('favorite')">
+          <text class="function-text">收藏</text>
+          <view class="iconfont icon-youjiantou"></view>
+        </view>
+
+        <!-- 列表项分割线 -->
+        <view class="item-divider"></view>
+
+        <!-- 隐私管理 -->
+        <view class="function-item" @click="handleFunction('privacy')">
+          <text class="function-text">隐私管理</text>
+          <view class="iconfont icon-youjiantou"></view>
+        </view>
       </view>
     </view>
-    
-    <!-- 内容分割线 -->
-    <view class="divider"></view>
   </view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref } from "vue";
 
 // 点击登录处理函数
 const handleLogin = () => {
-  console.log('点击了登录区域，跳转到登录页面');
+  console.log("点击了登录区域，跳转到登录页面");
   uni.navigateTo({
-    url: '/pages/login/login'
+    url: "/pages/login/login",
   });
 };
 
 // 订单类型点击事件
 const handleOrderType = (type) => {
-  console.log('点击了订单类型:', type);
+  console.log("点击了订单类型:", type);
   // 这里可以根据不同类型跳转到相应的订单页面
 };
 
 // 工具类型点击事件
 const handleToolType = (type) => {
-  console.log('点击了工具类型:', type);
+  console.log("点击了工具类型:", type);
   // 这里可以根据不同类型跳转到相应的工具页面
 };
 
 // 功能列表点击事件
 const handleFunction = (type) => {
-  console.log('点击了功能:', type);
+  console.log("点击了功能:", type);
   // 这里可以根据不同功能类型跳转到相应的功能页面
 };
 </script>
@@ -176,19 +184,21 @@ const handleFunction = (type) => {
 <style lang="scss">
 .mine-container {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #fff;
 }
 
 // 用户信息区
 .user-info {
   display: flex;
   align-items: center;
-  padding: 30rpx;
+  margin: 20rpx;
+  padding: 30rpx 20rpx;
   background-color: #fff;
-  
+  border-radius: 12rpx;
+
   .avatar-container {
     margin-right: 24rpx;
-    
+
     .avatar {
       width: 120rpx;
       height: 120rpx;
@@ -196,32 +206,36 @@ const handleFunction = (type) => {
       background-color: #f0f0f0;
     }
   }
-  
+
   .login-info {
     flex: 1;
-    
+
     .login-text {
       font-size: 36rpx;
       font-weight: bold;
       color: #333;
       margin-bottom: 8rpx;
     }
-    
+
     .login-desc {
       font-size: 28rpx;
       color: #999;
     }
   }
-  
+
   .profile-link {
     display: flex;
     align-items: center;
-    
+
+    .iconfont {
+      font-size: 36rpx;
+    }
+
     .profile-text {
       font-size: 28rpx;
       color: #999;
     }
-    
+
     .arrow {
       margin-left: 6rpx;
       font-size: 28rpx;
@@ -230,41 +244,38 @@ const handleFunction = (type) => {
   }
 }
 
-// 分割线
-.divider {
-  height: 10px;
-  background-color: #eee;
-}
-
 // 订单部分样式
 .order-section {
   background-color: #fff;
   margin: 20rpx;
   border-radius: 12rpx;
   padding: 30rpx 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-bottom: 20rpx;
-    
+
     .section-title {
       font-size: 32rpx;
       font-weight: 500;
       color: #333;
     }
-    
+
     .all-orders {
       display: flex;
       align-items: center;
-      
+
+      .iconfont {
+        font-size: 36rpx;
+      }
+
       .all-orders-text {
         font-size: 28rpx;
         color: #999;
       }
-      
+
       .all-orders-arrow {
         margin-left: 6rpx;
         font-size: 28rpx;
@@ -272,18 +283,18 @@ const handleFunction = (type) => {
       }
     }
   }
-  
+
   .order-menu {
     display: flex;
     justify-content: space-around;
     padding: 20rpx 0;
-    
+
     .order-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 25%;
-      
+
       .order-icon {
         width: 60rpx;
         height: 60rpx;
@@ -291,8 +302,12 @@ const handleFunction = (type) => {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .iconfont {
+          font-size: 48rpx;
+        }
       }
-      
+
       .order-text {
         font-size: 24rpx;
         color: #333;
@@ -304,25 +319,53 @@ const handleFunction = (type) => {
 // 工具部分样式
 .tools-section {
   background-color: #fff;
-  padding: 20rpx 0;
-  
-  .section-title {
-    font-size: 32rpx;
-    font-weight: 500;
-    color: #333;
-    padding: 0 30rpx 20rpx;
+  margin: 20rpx;
+  border-radius: 12rpx;
+  padding: 30rpx 20rpx;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20rpx;
+
+    .section-title {
+      font-size: 32rpx;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .all-tools {
+      display: flex;
+      align-items: center;
+
+      .iconfont {
+        font-size: 36rpx;
+      }
+
+      .all-tools-text {
+        font-size: 28rpx;
+        color: #999;
+      }
+
+      .all-tools-arrow {
+        margin-left: 6rpx;
+        font-size: 28rpx;
+        color: #ccc;
+      }
+    }
   }
-  
+
   .tools-menu {
     display: flex;
     padding: 20rpx 0;
-    
+
     .tool-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       width: 33.33%;
-      
+
       .tool-icon {
         width: 60rpx;
         height: 60rpx;
@@ -330,13 +373,13 @@ const handleFunction = (type) => {
         display: flex;
         justify-content: center;
         align-items: center;
-        
+
         // 企业服务图标
         .icon-enterprise {
           width: 50rpx;
           height: 50rpx;
           position: relative;
-          
+
           &::before {
             content: "";
             position: absolute;
@@ -348,7 +391,7 @@ const handleFunction = (type) => {
             top: 0;
             left: 0;
           }
-          
+
           &::after {
             content: "";
             position: absolute;
@@ -361,7 +404,7 @@ const handleFunction = (type) => {
             left: 10rpx;
           }
         }
-        
+
         // 商家入驻图标
         .icon-merchant {
           width: 50rpx;
@@ -369,7 +412,7 @@ const handleFunction = (type) => {
           border: 2px solid #333;
           border-radius: 6rpx;
           position: relative;
-          
+
           &::before {
             content: "";
             position: absolute;
@@ -382,7 +425,7 @@ const handleFunction = (type) => {
             left: 50%;
             transform: translateX(-50%);
           }
-          
+
           &::after {
             content: "+";
             position: absolute;
@@ -392,7 +435,7 @@ const handleFunction = (type) => {
             font-weight: bold;
           }
         }
-        
+
         // 联系客服图标
         .icon-customer {
           width: 50rpx;
@@ -400,7 +443,7 @@ const handleFunction = (type) => {
           border: 2px solid #333;
           border-radius: 50%;
           position: relative;
-          
+
           &::before {
             content: "";
             position: absolute;
@@ -416,7 +459,7 @@ const handleFunction = (type) => {
           }
         }
       }
-      
+
       .tool-text {
         font-size: 26rpx;
         color: #333;
@@ -428,28 +471,79 @@ const handleFunction = (type) => {
 // 功能列表样式
 .function-list {
   background-color: #fff;
-  
-  .function-item {
+  margin: 20rpx;
+  border-radius: 12rpx;
+  padding: 30rpx 20rpx;
+
+  .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30rpx;
-    
-    .function-text {
-      font-size: 30rpx;
+    padding-bottom: 20rpx;
+
+    .section-title {
+      font-size: 32rpx;
+      font-weight: 500;
       color: #333;
     }
-    
-    .function-arrow {
-      font-size: 30rpx;
-      color: #ccc;
+
+    .all-functions {
+      display: flex;
+      align-items: center;
+
+      .iconfont {
+        font-size: 36rpx;
+      }
+
+      .all-functions-text {
+        font-size: 28rpx;
+        color: #999;
+      }
+
+      .all-functions-arrow {
+        margin-left: 6rpx;
+        font-size: 28rpx;
+        color: #ccc;
+      }
     }
   }
-  
-  .item-divider {
-    height: 1px;
-    background-color: #eee;
-    margin-left: 30rpx;
+
+  .functions-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 10rpx 0;
+
+    .function-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30rpx;
+
+      .iconfont {
+        font-size: 36rpx;
+      }
+
+      .function-text {
+        font-size: 30rpx;
+        color: #333;
+      }
+
+      .function-arrow {
+        font-size: 30rpx;
+        color: #ccc;
+      }
+    }
+
+    .item-divider {
+      height: 1px;
+      background-color: #eee;
+      margin-left: 30rpx;
+    }
   }
 }
-</style> 
+
+.iconfont.icon-youjiantou {
+  font-size: 24rpx;
+  color: #ccc;
+}
+</style>
