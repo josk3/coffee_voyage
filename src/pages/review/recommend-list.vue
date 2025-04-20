@@ -54,10 +54,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 
 // 推荐菜总数
-const totalCount = ref(158);
+const totalCount = computed(() => {
+  return recommendItems.value.length;
+});
 
 // 推荐菜数据
 const recommendItems = ref([
@@ -202,9 +204,9 @@ const addToCart = (item) => {
 // 搜索
 const handleSearch = () => {
   console.log('搜索');
-  uni.showToast({
-    title: '打开搜索页面',
-    icon: 'none'
+  // 跳转到搜索页面
+  uni.navigateTo({
+    url: '/pages/review/search'
   });
 };
 

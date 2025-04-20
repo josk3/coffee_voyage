@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <view class="nav-header">
       <view class="left" @click="handleCancel">取消</view>
-      <view class="title">瑞幸咖啡 {{ shopAddress }}</view>
+      <view class="title">瑞幸咖啡</view>
       <view class="right" @click="handlePublish" :class="{ 'active': canPublish }">发布</view>
     </view>
     

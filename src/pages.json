@@ -40,11 +40,7 @@
       }
     },
     {
-      "path": "pages/review/write-review",
-      "style": {
-        "navigationBarTitleText": "写评价",
-        "navigationStyle": "custom"
-      }
+      "path": "pages/review/write-review"
     },
     {
       "path": "pages/review/recommend-list",
@@ -52,6 +48,9 @@
         "navigationBarTitleText": "推荐菜",
         "enablePullDownRefresh": false
       }
+    },
+    {
+      "path": "pages/review/search"
     }
   ],
   "globalStyle": {
