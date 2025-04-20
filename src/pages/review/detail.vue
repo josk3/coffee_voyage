@@ -3,7 +3,7 @@
     <!-- 轮播图部分 -->
     <swiper class="swiper" :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#ffffff" autoplay>
       <swiper-item v-for="(img, index) in shopDetail.images" :key="index">
-        <image :src="img" mode="aspectFill" class="swiper-img"></image>
+        <image :src="img" mode="aspectFill" class="swiper-img" @click="handleImageClick(index)"></image>
       </swiper-item>
     </swiper>
     
@@ -22,18 +22,18 @@
           >★</text>
         </view>
         <text class="rating">{{ shopDetail.rating }}</text>
-        <text class="review-count">{{ shopDetail.reviewCount }}条评价 ></text>
+        <text class="review-count" @click="viewAllReviews">{{ shopDetail.reviewCount }}条评价 ></text>
         <text class="price">¥{{ shopDetail.price }}/人</text>
       </view>
       
       <!-- 地址信息 -->
       <view class="address-container">
-        <view class="address">
+        <view class="address" @click="handleAddressClick">
           <text class="icon location-icon">📍</text>
           <text class="address-text">{{ shopDetail.address }}</text>
           <text class="icon arrow-icon">></text>
         </view>
-        <view class="phone">
+        <view class="phone" @click="handlePhoneClick">
           <text class="icon phone-icon">📞</text>
           <text class="phone-text">{{ shopDetail.phone }}</text>
           <text class="icon arrow-icon">></text>
@@ -44,7 +44,7 @@
     <!-- 优惠活动 -->
     <view class="promotion-section">
       <view class="section-title">优惠活动</view>
-      <view class="promotion-item" v-for="(promo, index) in shopDetail.promotions" :key="index">
+      <view class="promotion-item" v-for="(promo, index) in shopDetail.promotions" :key="index" @click="handlePromoClick(promo)">
         <text class="promo-tag">{{ promo.type }}</text>
         <text class="promo-desc">{{ promo.description }}</text>
       </view>
@@ -54,14 +54,14 @@
     <view class="reviews-section">
       <view class="section-header">
         <text class="section-title">用户评价({{ shopDetail.reviewCount }})</text>
-        <text class="view-all">查看全部 ></text>
+        <text class="view-all" @click="viewAllReviews">查看全部 ></text>
       </view>
       
       <view class="review-item" v-for="(review, index) in shopDetail.reviews" :key="index">
         <view class="reviewer-info">
-          <image :src="review.avatar" class="reviewer-avatar"></image>
+          <image :src="review.avatar" class="reviewer-avatar" @click="viewUserProfile(review)"></image>
           <view class="reviewer-meta">
-            <text class="reviewer-name">{{ review.name }}</text>
+            <text class="reviewer-name" @click="viewUserProfile(review)">{{ review.name }}</text>
             <view class="review-rating">
               <text 
                 v-for="n in 5" 
@@ -83,9 +83,23 @@
             :src="img"
             mode="aspectFill"
             class="review-image"
+            @click="viewReviewImage(review, imgIndex)"
           ></image>
         </view>
       </view>
+    </view>
+    
+    <!-- 底部操作栏 -->
+    <view class="footer-actions">
+      <view class="action-btn share-btn" @click="handleShare">
+        <text class="action-icon">💬</text>
+        <text class="action-text">分享</text>
+      </view>
+      <view class="action-btn favorite-btn" @click="handleFavorite">
+        <text class="action-icon">❤️</text>
+        <text class="action-text">收藏</text>
+      </view>
+      <view class="action-btn order-btn" @click="handleOrder">去点单</view>
     </view>
   </view>
 </template>
@@ -143,12 +157,119 @@ onMounted(() => {
     app.globalData.tempData = {};
   }
 });
+
+// 点击轮播图
+const handleImageClick = (index) => {
+  console.log('点击了轮播图:', index);
+  // 预览图片
+  uni.previewImage({
+    current: index,
+    urls: shopDetail.value.images
+  });
+};
+
+// 查看全部评价
+const viewAllReviews = () => {
+  console.log('查看全部评价');
+  uni.showToast({
+    title: '暂未开放此功能',
+    icon: 'none'
+  });
+};
+
+// 点击地址
+const handleAddressClick = () => {
+  console.log('点击了地址:', shopDetail.value.address);
+  // 打开地图
+  uni.showToast({
+    title: '即将打开地图',
+    icon: 'none'
+  });
+};
+
+// 点击电话
+const handlePhoneClick = () => {
+  console.log('点击了电话:', shopDetail.value.phone);
+  uni.showModal({
+    title: '提示',
+    content: `是否拨打电话 ${shopDetail.value.phone}？`,
+    success: function (res) {
+      if (res.confirm) {
+        uni.makePhoneCall({
+          phoneNumber: shopDetail.value.phone,
+          fail: () => {
+            uni.showToast({
+              title: '拨打电话失败',
+              icon: 'none'
+            });
+          }
+        });
+      }
+    }
+  });
+};
+
+// 点击优惠活动
+const handlePromoClick = (promo) => {
+  console.log('点击了优惠活动:', promo);
+  uni.showToast({
+    title: `${promo.type}: ${promo.description}`,
+    icon: 'none'
+  });
+};
+
+// 查看用户资料
+const viewUserProfile = (review) => {
+  console.log('查看用户资料:', review.name);
+  uni.showToast({
+    title: '暂未开放此功能',
+    icon: 'none'
+  });
+};
+
+// 查看评价图片
+const viewReviewImage = (review, imgIndex) => {
+  console.log('查看评价图片:', imgIndex);
+  // 预览图片
+  uni.previewImage({
+    current: imgIndex,
+    urls: review.images
+  });
+};
+
+// 分享
+const handleShare = () => {
+  console.log('分享');
+  uni.showShareMenu({
+    withShareTicket: true,
+    menus: ['shareAppMessage', 'shareTimeline']
+  });
+};
+
+// 收藏
+const handleFavorite = () => {
+  console.log('收藏');
+  uni.showToast({
+    title: '收藏成功',
+    icon: 'success'
+  });
+};
+
+// 去点单
+const handleOrder = () => {
+  console.log('去点单');
+  uni.showToast({
+    title: '即将跳转到点单页面',
+    icon: 'none'
+  });
+};
 </script>
 
 <style lang="scss">
 .detail-container {
   min-height: 100vh;
   background-color: #f5f5f5;
+  padding-bottom: 120rpx; /* 为底部操作栏留出空间 */
 }
 
 .swiper {
@@ -371,6 +492,52 @@ onMounted(() => {
         margin-bottom: 10rpx;
         border-radius: 6rpx;
       }
+    }
+  }
+}
+
+/* 底部操作栏 */
+.footer-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  background-color: #fff;
+  box-shadow: 0 -2rpx 10rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  
+  .action-btn {
+    height: 80rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 40rpx;
+    font-size: 28rpx;
+    
+    &.share-btn, &.favorite-btn {
+      width: 150rpx;
+      color: #666;
+      flex-direction: column;
+      
+      .action-icon {
+        font-size: 40rpx;
+        margin-bottom: 5rpx;
+      }
+      
+      .action-text {
+        font-size: 24rpx;
+      }
+    }
+    
+    &.order-btn {
+      flex: 1;
+      margin-left: 30rpx;
+      background-color: #f76c3f;
+      color: #fff;
+      font-weight: bold;
     }
   }
 }
