@@ -25,9 +25,13 @@
     
     <!-- 我的订单部分 -->
     <view class="order-section">
-      <!-- 订单标题 -->
-      <view class="section-title">
-        <text>我的订单</text>
+      <!-- 订单标题和全部订单入口 -->
+      <view class="section-header">
+        <text class="section-title">我的订单</text>
+        <view class="all-orders" @click="handleOrderType('all')">
+          <text class="all-orders-text">全部订单</text>
+          <text class="all-orders-arrow">></text>
+        </view>
       </view>
       
       <!-- 订单类型菜单 -->
@@ -35,33 +39,33 @@
         <!-- 待付款 -->
         <view class="order-item" @click="handleOrderType('pending')">
           <view class="order-icon">
-            <view class="icon-wallet"></view>
+            <uni-icons type="wallet" size="24" color="#333"></uni-icons>
           </view>
           <text class="order-text">待付款</text>
         </view>
         
-        <!-- 可使用 -->
-        <view class="order-item" @click="handleOrderType('usable')">
+        <!-- 待发货 -->
+        <view class="order-item" @click="handleOrderType('shipping')">
           <view class="order-icon">
-            <view class="icon-usable"></view>
+            <uni-icons type="shop" size="24" color="#333"></uni-icons>
           </view>
-          <text class="order-text">可使用</text>
+          <text class="order-text">待发货</text>
         </view>
         
-        <!-- 退款/售后 -->
-        <view class="order-item" @click="handleOrderType('refund')">
+        <!-- 待收货 -->
+        <view class="order-item" @click="handleOrderType('receiving')">
           <view class="order-icon">
-            <view class="icon-refund"></view>
+            <uni-icons type="cart" size="24" color="#333"></uni-icons>
           </view>
-          <text class="order-text">退款/售后</text>
+          <text class="order-text">待收货</text>
         </view>
         
-        <!-- 全部订单 -->
-        <view class="order-item" @click="handleOrderType('all')">
+        <!-- 待评价 -->
+        <view class="order-item" @click="handleOrderType('review')">
           <view class="order-icon">
-            <view class="icon-all-orders"></view>
+            <uni-icons type="chat" size="24" color="#333"></uni-icons>
           </view>
-          <text class="order-text">全部订单</text>
+          <text class="order-text">待评价</text>
         </view>
       </view>
     </view>
@@ -235,13 +239,38 @@ const handleFunction = (type) => {
 // 订单部分样式
 .order-section {
   background-color: #fff;
-  padding: 20rpx 0;
+  margin: 20rpx;
+  border-radius: 12rpx;
+  padding: 30rpx 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
   
-  .section-title {
-    font-size: 32rpx;
-    font-weight: 500;
-    color: #333;
-    padding: 0 30rpx 20rpx;
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20rpx;
+    
+    .section-title {
+      font-size: 32rpx;
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .all-orders {
+      display: flex;
+      align-items: center;
+      
+      .all-orders-text {
+        font-size: 28rpx;
+        color: #999;
+      }
+      
+      .all-orders-arrow {
+        margin-left: 6rpx;
+        font-size: 28rpx;
+        color: #ccc;
+      }
+    }
   }
   
   .order-menu {
@@ -256,101 +285,16 @@ const handleFunction = (type) => {
       width: 25%;
       
       .order-icon {
-        width: 50rpx;
-        height: 50rpx;
+        width: 60rpx;
+        height: 60rpx;
         margin-bottom: 10rpx;
         display: flex;
         justify-content: center;
         align-items: center;
-        
-        // 待付款图标
-        .icon-wallet {
-          width: 45rpx;
-          height: 40rpx;
-          border: 2px solid #333;
-          border-radius: 4px;
-          position: relative;
-          
-          &::before {
-            content: "";
-            position: absolute;
-            width: 30rpx;
-            height: 15rpx;
-            border: 2px solid #333;
-            border-bottom: none;
-            border-radius: 15rpx 15rpx 0 0;
-            top: -10rpx;
-            left: 50%;
-            transform: translateX(-50%);
-          }
-        }
-        
-        // 可使用图标
-        .icon-usable {
-          width: 45rpx;
-          height: 45rpx;
-          border: 2px solid #333;
-          border-radius: 4px;
-          position: relative;
-          
-          &::before {
-            content: "✓";
-            position: absolute;
-            font-size: 32rpx;
-            top: -8rpx;
-            left: 8rpx;
-          }
-        }
-        
-        // 退款/售后图标
-        .icon-refund {
-          width: 45rpx;
-          height: 45rpx;
-          border-radius: 50%;
-          border: 2px solid #333;
-          position: relative;
-          
-          &::before {
-            content: "¥";
-            position: absolute;
-            font-size: 28rpx;
-            top: -5rpx;
-            left: 12rpx;
-          }
-        }
-        
-        // 全部订单图标
-        .icon-all-orders {
-          width: 45rpx;
-          height: 40rpx;
-          border: 2px solid #333;
-          border-radius: 2px;
-          position: relative;
-          
-          &::before {
-            content: "";
-            position: absolute;
-            width: 30rpx;
-            height: 2px;
-            background-color: #333;
-            top: 10rpx;
-            left: 7rpx;
-          }
-          
-          &::after {
-            content: "";
-            position: absolute;
-            width: 30rpx;
-            height: 2px;
-            background-color: #333;
-            top: 20rpx;
-            left: 7rpx;
-          }
-        }
       }
       
       .order-text {
-        font-size: 26rpx;
+        font-size: 24rpx;
         color: #333;
       }
     }
