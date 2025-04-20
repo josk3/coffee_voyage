@@ -338,9 +338,9 @@ const handleWriteReview = () => {
 // 查看全部推荐菜
 const viewAllRecommends = () => {
   console.log('查看全部推荐菜');
-  uni.showToast({
-    title: '即将查看全部推荐菜',
-    icon: 'none'
+  // 跳转到推荐菜列表页面
+  uni.navigateTo({
+    url: `/pages/review/recommend-list?shopId=${shopDetail.value.id}&shopName=${encodeURIComponent(shopDetail.value.name)}`
   });
 };
 

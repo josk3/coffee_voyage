@@ -45,6 +45,13 @@
         "navigationBarTitleText": "写评价",
         "navigationStyle": "custom"
       }
+    },
+    {
+      "path": "pages/review/recommend-list",
+      "style": {
+        "navigationBarTitleText": "推荐菜",
+        "enablePullDownRefresh": false
+      }
     }
   ],
   "globalStyle": {
