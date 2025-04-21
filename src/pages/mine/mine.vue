@@ -1,19 +1,19 @@
 <template>
   <view class="mine-container">
-    <!-- 未登录状态的用户信息区 -->
+    <!-- 用户信息区域 - 根据登录状态展示不同内容 -->
     <view class="user-info" @click="handleLogin">
       <!-- 默认头像 -->
       <view class="avatar-container">
         <image
           class="avatar"
-          src="https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp"
+          :src="avatar"
           mode="aspectFill"
         ></image>
       </view>
 
       <!-- 登录文本区域 -->
       <view class="login-info">
-        <view class="login-text">点击登录</view>
+        <view class="login-text">{{ nickname }}</view>
         <view class="login-desc">登录更精彩</view>
       </view>
 
@@ -128,17 +128,71 @@
           <text class="function-text">隐私管理</text>
           <view class="iconfont icon-youjiantou"></view>
         </view>
+        
+        <!-- 已登录时显示退出登录选项 -->
+        <template v-if="isLoggedIn">
+          <view class="item-divider"></view>
+          <view class="function-item logout" @click="handleLogout">
+            <text class="function-text logout-text">退出登录</text>
+            <view class="iconfont icon-youjiantou"></view>
+          </view>
+        </template>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted, onActivated } from "vue";
+import { useUserStore } from '@/stores/user';
+
+// 使用用户Pinia Store
+const userStore = useUserStore();
+
+// 计算属性：是否已登录
+const isLoggedIn = computed(() => userStore.isLoggedIn);
+// 计算属性：用户昵称
+const nickname = computed(() => userStore.nickname || '点击登录');
+// 计算属性：用户头像
+const avatar = computed(() => userStore.avatar || 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp');
+
+// 检查登录状态函数
+const checkLoginStatus = () => {
+  const token = uni.getStorageSync('token');
+  const userInfo = uni.getStorageSync('userInfo');
+  
+  if (!token || !userInfo) {
+    console.log('用户未登录，跳转到登录页');
+    uni.navigateTo({
+      url: '/pages/login/login'
+    });
+  }
+};
+
+// 页面加载时检查登录状态
+onMounted(() => {
+  checkLoginStatus();
+});
+
+// 页面显示时也检查登录状态
+onActivated(() => {
+  checkLoginStatus();
+});
 
 // 点击登录处理函数
 const handleLogin = () => {
-  console.log("点击了登录区域，跳转到登录页面");
+  // 如果已登录，显示用户信息
+  if (isLoggedIn.value) {
+    console.log("用户已登录，显示用户信息");
+    uni.showToast({
+      title: '当前已登录',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  // 未登录则跳转到登录页面
+  console.log("用户未登录，跳转到登录页面");
   uni.navigateTo({
     url: "/pages/login/login",
   });
@@ -160,6 +214,46 @@ const handleToolType = (type) => {
 const handleFunction = (type) => {
   console.log("点击了功能:", type);
   // 这里可以根据不同功能类型跳转到相应的功能页面
+};
+
+// 退出登录处理函数
+const handleLogout = async () => {
+  console.log("用户退出登录");
+  
+  // 显示加载提示
+  uni.showLoading({
+    title: '退出登录中...'
+  });
+  
+  try {
+    // 调用store的登出方法（内部会调用API）
+    await userStore.logout();
+    
+    // 显示成功提示
+    uni.showToast({
+      title: '已退出登录',
+      icon: 'success'
+    });
+    
+    // 延迟后刷新页面
+    setTimeout(() => {
+      // 刷新当前页面
+      const pages = getCurrentPages();
+      const currentPage = pages[pages.length - 1];
+      if (currentPage && currentPage.route === 'pages/mine/mine') {
+        // 如果在个人中心页，刷新页面
+        currentPage.onLoad();
+      }
+    }, 1000);
+  } catch (error) {
+    console.error('退出登录失败:', error);
+    uni.showToast({
+      title: '退出失败，请重试',
+      icon: 'none'
+    });
+  } finally {
+    uni.hideLoading();
+  }
 };
 </script>
 
@@ -525,5 +619,15 @@ const handleFunction = (type) => {
 .iconfont.icon-youjiantou {
   font-size: 24rpx;
   color: #ccc;
+}
+
+// 退出登录样式
+.logout {
+  margin-top: 20rpx;
+}
+
+.logout-text {
+  color: #f56c6c !important;
+  font-weight: 500;
 }
 </style>

@@ -10,8 +10,33 @@
   </view>
 </template>
 
-<script setup>
-// 页面逻辑
+<script>
+export default {
+  data() {
+    return {};
+  },
+  onLoad() {
+    // 页面加载时检查登录状态
+    this.checkLoginStatus();
+  },
+  onShow() {
+    // 页面显示时也检查登录状态，确保从其他页面返回时依然有效
+    this.checkLoginStatus();
+  },
+  methods: {
+    checkLoginStatus() {
+      const token = uni.getStorageSync('token');
+      const userInfo = uni.getStorageSync('userInfo');
+      
+      if (!token || !userInfo) {
+        console.log('用户未登录，跳转到登录页');
+        uni.navigateTo({
+          url: '/pages/login/login'
+        });
+      }
+    }
+  }
+}
 </script>
 
 <style>
