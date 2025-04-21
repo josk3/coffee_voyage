@@ -1,29 +1,19 @@
 <script>
+import { checkLoginAndNavigate } from './utils/auth';
+
 export default {
   globalData: {
     tempData: {},
     shopInfo: null  // 存储店铺信息
   },
   onLaunch: function () {
-    console.log('App Launch')
+    console.log('App Launch');
     
-    // 检查用户是否登录
-    const token = uni.getStorageSync('token');
-    const userInfo = uni.getStorageSync('userInfo');
+    // 检查登录状态并在需要时跳转到登录页
+    setTimeout(() => {
+      checkLoginAndNavigate(true);
+    }, 100);
     
-    if (!token || !userInfo) {
-      console.log('用户未登录，跳转到登录页');
-      // 使用setTimeout延迟跳转，确保应用完全初始化
-      setTimeout(() => {
-        uni.navigateTo({
-          url: '/pages/login/login'
-        });
-      }, 100);
-    } else {
-      console.log('用户已登录:', userInfo);
-    }
-    
-    // 其他初始化代码
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
@@ -36,7 +26,7 @@ export default {
   },
   onHide: function () {
     console.log('App Hide')
-  },
+  }
 }
 </script>
 

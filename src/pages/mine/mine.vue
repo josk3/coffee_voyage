@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onActivated } from "vue";
+import { ref, computed } from "vue";
 import { useUserStore } from '@/stores/user';
 
 // 使用用户Pinia Store
@@ -155,29 +155,6 @@ const isLoggedIn = computed(() => userStore.isLoggedIn);
 const nickname = computed(() => userStore.nickname || '点击登录');
 // 计算属性：用户头像
 const avatar = computed(() => userStore.avatar || 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp');
-
-// 检查登录状态函数
-const checkLoginStatus = () => {
-  const token = uni.getStorageSync('token');
-  const userInfo = uni.getStorageSync('userInfo');
-  
-  if (!token || !userInfo) {
-    console.log('用户未登录，跳转到登录页');
-    uni.navigateTo({
-      url: '/pages/login/login'
-    });
-  }
-};
-
-// 页面加载时检查登录状态
-onMounted(() => {
-  checkLoginStatus();
-});
-
-// 页面显示时也检查登录状态
-onActivated(() => {
-  checkLoginStatus();
-});
 
 // 点击登录处理函数
 const handleLogin = () => {

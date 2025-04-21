@@ -7,7 +7,10 @@
       "path": "pages/login/login",
       "style": {
         "navigationBarTitleText": "登录",
-        "navigationStyle": "custom"
+        "navigationStyle": "custom",
+        "app-plus": {
+          "titleNView": false
+        }
       }
     },
     {
@@ -88,15 +91,6 @@
       {
         "pagePath": "pages/mine/mine",
         "text": "我的"
-      }
-    ]
-  },
-  "condition": {
-    "current": 0,
-    "list": [
-      {
-        "name": "登录页",
-        "path": "pages/login/login"
       }
     ]
   }

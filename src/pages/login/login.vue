@@ -33,61 +33,26 @@
       <!-- 根据userInfo_tank为true，使得页面呈现模糊效果，同时为灰色部分添加点击事件tank -->
       <view class="userInfo_tank_bg" v-if="userInfo_tank" @click="tank"></view>
       <!--  -->
-      <view class="userInfo_tank" :class="userInfo_tank ? 'transfromjoin' : 'transfromout'" :style="{ backgroundColor: isDarkMode ? '#222' : '#fff' }">
-        <!-- 弹窗标题区带应用信息 -->
-        <view class="tank_header">
-          <view class="app_icon">
-            <image src="/static/logo.png" mode="aspectFit"></image>
-          </view>
-          <view class="app_info">
-            <text class="app_name">博古斯美食教室 申请</text>
-          </view>
-        </view>
-
+      <view class="userInfo_tank" :class="userInfo_tank ? 'transfromjoin' : 'transfromout'">
         <view class="tank_title">
-          <text>你的昵称、头像</text>
+          <text>申请获取您的头像、昵称</text>
         </view>
-
-        <!-- 预览区域 -->
-        <view class="preview_area" :style="{ backgroundColor: isDarkMode ? '#333' : '#f8f8f8' }">
-          <view class="preview_user">
-            <!-- 头像选择按钮 -->
-            <button class="avatar_button preview_avatar_btn" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
-              <image 
-                class="preview_avatar" 
-                :src="avatarUrl || '/static/default-avatar.png'" 
-                mode="aspectFill">
-              </image>
-              <!-- 添加相机图标提示可点击 -->
-              <view class="camera_icon">
-                <text class="iconfont icon-camera">📷</text>
-              </view>
-            </button>
-            <view class="preview_info">
-              <text class="preview_nickname">{{ nickName || '半糖士豆腐咖啡_' }}</text>
-              <text class="preview_source">微信昵称头像</text>
-            </view>
-          </view>
-          <view class="preview_check">
-            <text class="check_icon">✓</text>
-          </view>
+        <view class="tank_content">
+          <text>头像：</text>
+          <button class="avatar_button" open-type="chooseAvatar" @chooseavatar="onChooseAvatar">
+            <image class="avatar_url" :src="avatarUrl || '/static/default-avatar.png'"></image>
+          </button>
         </view>
-
-        <view class="other_option_hint">
-          <text @click="useOtherAvatarNickname">使用其他昵称</text>
-        </view>
-        
-        <view class="tank_content" v-if="showCustomInput">
+        <view class="tank_content">
           <text>昵称：</text>
           <input form-type='submit' @blur="getNickName" placeholder="请输入昵称" type="nickname" />
         </view>
-        
         <view class="confirm_button">
           <view>
-            <button @click="closeTank" :style="{ color: isDarkMode ? '#fff' : '#000', borderColor: isDarkMode ? '#444' : '#ddd' }">取消</button>
+            <button @click="closeTank">拒绝</button>
           </view>
           <view>
-            <button @click="submit" type="primary" :style="{ backgroundColor: '#07c160' }">允许</button>
+            <button @click="submit" type="primary">允许</button>
           </view>
         </view>
       </view>
@@ -106,32 +71,14 @@ export default {
       userInfo: null,
       nickName: null,
       avatarUrl: null,
-      userInfo_tank: false,
-      isDarkMode: false,
-      showCustomInput: false
+      userInfo_tank: false
     }
   },
   setup() {
     const userStore = useUserStore();
     return { userStore };
   },
-  onLoad() {
-    // 检测系统是否为暗黑模式
-    this.checkDarkMode();
-  },
   methods: {
-    // 检测系统暗黑模式
-    checkDarkMode() {
-      // #ifdef APP-PLUS || MP-WEIXIN
-      uni.getSystemInfo({
-        success: (res) => {
-          this.isDarkMode = res.theme === 'dark';
-          console.log('当前系统主题:', res.theme);
-        }
-      });
-      // #endif
-    },
-    
     // 打开或关闭授权弹窗
     tank() {
       if (!this.agreeProtocol) {
@@ -254,19 +201,9 @@ export default {
       
       // 延迟跳转到首页
       setTimeout(() => {
-        // 获取当前页面栈
-        const pages = getCurrentPages();
-        if (pages.length > 1) {
-          // 如果有上一页，则返回上一页
-          uni.navigateBack({
-            delta: 1
-          });
-        } else {
-          // 如果没有上一页，则跳转到首页
-          uni.switchTab({
-            url: '/pages/index/index'
-          });
-        }
+        uni.switchTab({
+          url: '/pages/index/index'
+        });
       }, 1500);
       
       this.isLoading = false;
@@ -302,10 +239,6 @@ export default {
         title: '正在加载隐私政策...',
         icon: 'none'
       });
-    },
-
-    useOtherAvatarNickname() {
-      this.showCustomInput = !this.showCustomInput;
     }
   }
 }
@@ -447,8 +380,8 @@ export default {
 
 .tank_title {
   border-bottom: 1px solid #eee;
-  padding: 20rpx 10rpx;
-  font-weight: 600;
+  padding-bottom: 30rpx;
+  font-weight: 700;
 }
 
 .confirm_button {
@@ -468,8 +401,6 @@ export default {
 
 .confirm_button view button {
   width: 90%;
-  border-radius: 10rpx;
-  font-size: 30rpx;
 }
 
 .avatar_button {
@@ -480,128 +411,5 @@ export default {
   border-radius: 50% !important;
   font-size: 32rpx !important;
   overflow: visible !important;
-}
-
-.tank_header {
-  display: flex;
-  align-items: center;
-  padding: 20rpx 10rpx;
-  margin-bottom: 10rpx;
-}
-
-.app_icon {
-  width: 60rpx;
-  height: 60rpx;
-  margin-right: 20rpx;
-}
-
-.app_icon image {
-  width: 100%;
-  height: 100%;
-  border-radius: 10rpx;
-}
-
-.app_info {
-  flex: 1;
-}
-
-.app_name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
-}
-
-.preview_area {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 10rpx;
-  margin: 20rpx 0;
-  background-color: #f8f8f8;
-  border-radius: 10rpx;
-}
-
-.preview_user {
-  display: flex;
-  align-items: center;
-}
-
-.preview_avatar_btn {
-  position: relative;
-  width: 80rpx !important;
-  height: 80rpx !important;
-  margin-right: 20rpx !important;
-  border-radius: 50% !important;
-  padding: 0 !important;
-  background: none !important;
-}
-
-.preview_avatar {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-}
-
-.preview_info {
-  display: flex;
-  flex-direction: column;
-}
-
-.preview_nickname {
-  font-size: 28rpx;
-  color: #333333;
-  margin-bottom: 5rpx;
-}
-
-.preview_source {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.preview_check {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 50%;
-  background-color: #07c160;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.check_icon {
-  font-size: 24rpx;
-  color: #ffffff;
-}
-
-.other_option_hint {
-  padding: 20rpx 10rpx;
-  text-align: left;
-  font-size: 26rpx;
-  color: #576b95;
-  margin-bottom: 10rpx;
-}
-
-.camera_icon {
-  position: absolute;
-  right: -5rpx;
-  bottom: -5rpx;
-  width: 30rpx;
-  height: 30rpx;
-  border-radius: 50%;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #ddd;
-}
-
-.iconfont {
-  font-size: 18rpx;
-  color: #666;
-}
-
-.icon-camera {
-  font-size: 18rpx;
-  color: #666;
 }
 </style>
