@@ -22,12 +22,12 @@
     <view class="course-section">
       <view class="section-header">
         <text class="section-title">课程分类</text>
-        <view class="section-nav">
-          <text class="nav-item" :class="{active: activeNav==='系统'}" @click="switchNav('系统')">系统</text>
+        <view class="category-nav">
+          <text class="nav-item">系统</text>
           <text class="nav-separator">|</text>
-          <text class="nav-item" :class="{active: activeNav==='兴趣'}" @click="switchNav('兴趣')">兴趣</text>
+          <text class="nav-item">兴趣</text>
           <text class="nav-separator">|</text>
-          <text class="nav-item" :class="{active: activeNav==='全面'}" @click="switchNav('全面')">全面</text>
+          <text class="nav-item">全面</text>
         </view>
         <text class="more" @click="handleMoreClick">更多 ></text>
       </view>
@@ -76,26 +76,27 @@ const currentIndex = ref(1);
 const onChange = e => { currentIndex.value = e.detail.current + 1; };
 const handleImageClick = idx => { console.log(`点击了第${idx}张图片`); };
 
-const activeNav = ref('系统');
-const switchNav = nav => { activeNav.value = nav; console.log('切换导航:', nav); };
 const handleMoreClick = () => { 
-  console.log('跳转到商品分组页面'); 
   uni.navigateTo({
     url: '/pages/index/product-group'
   });
 };
 
 const categories = ref([
-  { name: '西式面点课程', img: images.value[0] },
-  { name: '中式面点课程', img: images.value[0] },
-  { name: '中式烹调课程', img: images.value[0] },
-  { name: '茶艺师课程', img: images.value[0] },
-  { name: '咖啡师课程', img: images.value[0] },
-  { name: '西式烹调课程', img: images.value[0] }
+  { id: 8, name: '西式面点课程', img: images.value[0] },
+  { id: 7, name: '中式面点课程', img: images.value[0] },
+  { id: 6, name: '中式烹调课程', img: images.value[0] },
+  { id: 5, name: '茶艺师课程', img: images.value[0] },
+  { id: 9, name: '咖啡师课程', img: images.value[0] },
+  { id: 3, name: '西式烹调课程', img: images.value[0] }
 ]);
-const handleCategoryClick = cat => { console.log('点击课程分类:', cat.name); };
+const handleCategoryClick = cat => { 
+  uni.navigateTo({
+    url: `/pages/index/product-group?categoryId=${cat.id}`
+  });
+};
 
-// 新增点击事件处理函数
+// 大师卡片点击事件
 const handleMasterCardClick = () => { console.log('点击了大师卡片'); };
 </script>
 
@@ -144,22 +145,24 @@ const handleMasterCardClick = () => { console.log('点击了大师卡片'); };
   align-items: center;
   margin-bottom: 20rpx;
 }
-.section-nav {
+.category-nav {
   display: flex;
   align-items: center;
   flex: 1;
 }
-.nav-item {
-  font-size: 28rpx;
-  color: #666;
-  margin: 0 10rpx;
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 20rpx;
 }
-.nav-item.active {
-  color: #1296db;
+.nav-item {
+  font-size: 24rpx;
+  color: #666;
 }
 .nav-separator {
-  font-size: 28rpx;
-  color: #999;
+  color: #ccc;
+  margin: 0 10rpx;
 }
 .more {
   font-size: 24rpx;
@@ -206,15 +209,12 @@ const handleMasterCardClick = () => { console.log('点击了大师卡片'); };
 }
 .card-desc {
   position: relative;
-  /* height: 100%; */
   width: 20rpx;
   border-right: 1px solid #e0786f;
   border-left: 1px solid #e0786f;
   margin: 10rpx 10rpx 10rpx 0;
-  /* margin: 10rpx 10rpx 10rpx 0; */
   display: flex;
   justify-content: center;
-  /* padding-top: 10rpx; */
   box-sizing: border-box;
 }
 .desc-text {
@@ -230,7 +230,6 @@ const handleMasterCardClick = () => { console.log('点击了大师卡片'); };
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: rgba(207, 231, 204, 0.3); */
 }
 .title-text {
   font-size: 24rpx;
@@ -246,13 +245,6 @@ const handleMasterCardClick = () => { console.log('点击了大师卡片'); };
   margin-top: 20rpx;
   padding: 20rpx;
   background-color: #fff;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
 }
 
 .master-card {
