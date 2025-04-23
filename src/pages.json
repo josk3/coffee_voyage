@@ -4,6 +4,13 @@
       "path": "pages/index/index"
     },
     {
+      "path": "pages/index/product-group",
+      "style": {
+        "navigationBarTitleText": "商品分组",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
       "path": "pages/login/login",
       "style": {
         "navigationBarTitleText": "登录",
