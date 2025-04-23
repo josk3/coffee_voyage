@@ -24,11 +24,9 @@
       :scroll-into-view="scrollIntoView"
       :lower-threshold="100"
       @scrolltolower="onScrollToLower"
-      :refresher-enabled="true"
-      refresher-background="#f5f5f5"
     >
       <view v-for="(cat, index) in data.categories" :key="cat.id" :id="`category-${cat.id}`" class="category-section">
-        <!-- 分类标题 - 添加data-index属性用于滚动检测 -->
+        <!-- 分类标题 -->
         <view class="category-title" :data-index="index" :id="`title-${cat.id}`">{{ cat.name }}</view>
         
         <!-- 顶部主图 -->
@@ -57,19 +55,8 @@
         </view>
       </view>
       
-      <!-- 监视器元素 - 用于检测滚动位置 -->
-      <view 
-        v-for="(cat, index) in data.categories" 
-        :key="'observer-'+cat.id"
-        :id="`observer-${cat.id}`"
-        class="scroll-observer"
-        :style="{ top: index * 60 + 'px' }"
-      ></view>
-      
-      <!-- 底部占位空间 - 确保最后一个分类可以完全滚动到顶部 -->
+      <!-- 底部占位空间和提示 -->
       <view class="bottom-space" :style="{ height: bottomSpaceHeight + 'px' }"></view>
-      
-      <!-- 底部提示信息 -->
       <view class="bottom-tip" v-if="showBottomTip">
         <view class="tip-line"></view>
         <text class="tip-text">到达最底部啦</text>
@@ -80,170 +67,19 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, nextTick, onLoad } from 'vue';
+import { reactive, ref, computed, onMounted, nextTick } from 'vue';
 
-// 当前选中的分类ID
-const currentCategory = ref(1); // 默认选中第一个分类
+// 响应式状态
+const currentCategory = ref(1); // 当前选中的分类ID，默认为第一个
 const scrollTop = ref(0);
 const scrollViewHeight = ref(0);
-const isScrolling = ref(false);
 const scrollIntoView = ref('');
-// 添加一个标志，标识当前滚动是否由用户点击导致的
-const isUserClicking = ref(false);
-// 底部提示状态
-const showBottomTip = ref(false);
-// 底部额外空间高度，确保最后一个分类可以滚动
-const bottomSpaceHeight = ref(300);
+const isScrolling = ref(false);
+const isUserClicking = ref(false); // 标记是否由用户点击导致的滚动
+const showBottomTip = ref(false); // 底部提示状态
+const bottomSpaceHeight = ref(300); // 底部额外空间高度
 
-// 处理滚动到底部事件
-const onScrollToLower = () => {
-  console.log('滚动到底部');
-  showBottomTip.value = true;
-  
-  // 如果当前不是最后一个分类，自动选中最后一个分类
-  const lastCategoryId = data.categories[data.categories.length - 1].id;
-  if (currentCategory.value !== lastCategoryId) {
-    currentCategory.value = lastCategoryId;
-  }
-};
-
-// 接收页面参数
-const handlePageParams = () => {
-  const pages = getCurrentPages();
-  const currentPage = pages[pages.length - 1];
-  const options = currentPage.options || {};
-  
-  // 如果有指定分类ID，则切换到对应分类
-  if (options.categoryId) {
-    const categoryId = parseInt(options.categoryId);
-    if (categoryId && data.categories.some(cat => cat.id === categoryId)) {
-      currentCategory.value = categoryId;
-    }
-  }
-};
-
-// 简化的滚动监听函数
-const onScroll = (e) => {
-  if (isScrolling.value || isUserClicking.value) return;
-  
-  const scrollTop = e.detail.scrollTop;
-  
-  // 获取滚动区域的总高度和当前可见区域高度
-  const scrollHeight = e.detail.scrollHeight || 0;
-  const clientHeight = scrollViewHeight.value;
-  
-  // 检测是否滚动到底部或接近底部
-  const isNearBottom = scrollTop + clientHeight + 50 >= scrollHeight;
-  
-  // 如果接近底部，显示底部提示并选中最后一个分类
-  if (isNearBottom) {
-    showBottomTip.value = true;
-    const lastCategory = data.categories[data.categories.length - 1];
-    if (lastCategory && lastCategory.id !== currentCategory.value) {
-      currentCategory.value = lastCategory.id;
-    }
-    return;
-  } else if (scrollTop < scrollHeight - clientHeight - 200) {
-    // 如果距离底部还有一定距离，隐藏底部提示
-    showBottomTip.value = false;
-  }
-  
-  // 使用新的方式检测标题位置
-  detectVisibleTitles(scrollTop);
-};
-
-// 检测可见的标题并更新导航
-const detectVisibleTitles = (scrollTop) => {
-  // 创建选择器查询
-  const query = uni.createSelectorQuery();
-  
-  // 查询所有标题元素的位置
-  query.selectAll('.category-title').boundingClientRect(rects => {
-    if (!rects || !rects.length) return;
-    
-    // 找到最接近顶部的标题
-    let bestTitleIndex = -1;
-    let bestDistance = Infinity;
-    
-    // 定义更严格的阈值范围 - 标题必须非常接近顶部
-    const topThreshold = 30; // 只考虑接近顶部30px范围内的标题
-    
-    rects.forEach((rect, index) => {
-      // 只有当标题接近顶部时才考虑更新导航
-      // 标题的顶部位置应该在阈值范围内（略微超出顶部或刚好进入顶部）
-      if (rect.top >= -topThreshold && rect.top <= topThreshold) {
-        const distance = Math.abs(rect.top);
-        if (distance < bestDistance) {
-          bestDistance = distance;
-          bestTitleIndex = index;
-        }
-      }
-    });
-    
-    // 如果找到了合适的标题
-    if (bestTitleIndex !== -1) {
-      const categoryId = data.categories[bestTitleIndex].id;
-      console.log('标题接近顶部:', categoryId, '距离:', bestDistance);
-      
-      if (categoryId !== currentCategory.value) {
-        currentCategory.value = categoryId;
-      }
-    }
-  }).exec();
-};
-
-// 初始化
-onMounted(() => {
-  // 处理页面传入的参数
-  handlePageParams();
-  
-  // 设置scroll-view的高度为屏幕高度
-  scrollViewHeight.value = uni.getWindowInfo().windowHeight;
-  
-  // 延迟滚动到对应分类
-  setTimeout(() => {
-    scrollIntoView.value = `category-${currentCategory.value}`;
-  }, 300);
-});
-
-// 切换分类
-const switchCategory = (categoryId) => {
-  console.log('切换到分类ID:', categoryId);
-  
-  // 设置点击标志，防止滚动事件改变导航状态
-  isUserClicking.value = true;
-  currentCategory.value = categoryId;
-  
-  // 检查是否点击了最后一个分类
-  const isLastCategory = categoryId === data.categories[data.categories.length - 1].id;
-  if (isLastCategory) {
-    // 如果是最后一个分类，在滚动后显示底部提示
-    setTimeout(() => {
-      showBottomTip.value = true;
-    }, 300);
-  } else {
-    // 如果不是最后一个分类，隐藏底部提示
-    showBottomTip.value = false;
-  }
-  
-  // 防止滚动事件重复触发分类切换
-  isScrolling.value = true;
-  
-  // 使用scroll-into-view直接滚动到目标元素
-  scrollIntoView.value = `category-${categoryId}`;
-  
-  // 减少滚动完成后的等待时间，使响应更快
-  setTimeout(() => {
-    isScrolling.value = false;
-    
-    // 延迟一段时间后再允许滚动事件影响导航状态
-    setTimeout(() => {
-      isUserClicking.value = false;
-    }, 200);
-  }, 500);
-};
-
-// 模拟后端接口返回的所有类别和课程数据
+// 分类和课程数据
 const data = reactive({
   // 分类列表
   categories: [
@@ -392,24 +228,164 @@ const data = reactive({
   }
 });
 
-// 计算当前选中分类的课程数据
+// 当前选中分类的课程数据
 const currentCategoryData = computed(() => {
   return data.categoryData[currentCategory.value] || null;
 });
 
+// 页面初始化
+onMounted(() => {
+  // 处理页面传入的参数
+  handlePageParams();
+  
+  // 设置scroll-view的高度为屏幕高度
+  scrollViewHeight.value = uni.getWindowInfo().windowHeight;
+  
+  // 延迟滚动到对应分类
+  setTimeout(() => {
+    scrollIntoView.value = `category-${currentCategory.value}`;
+  }, 300);
+});
+
+// 接收页面参数
+const handlePageParams = () => {
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1];
+  const options = currentPage.options || {};
+  
+  // 如果有指定分类ID，则切换到对应分类
+  if (options.categoryId) {
+    const categoryId = parseInt(options.categoryId);
+    if (categoryId && data.categories.some(cat => cat.id === categoryId)) {
+      currentCategory.value = categoryId;
+    }
+  }
+};
+
+// 滚动到底部事件处理
+const onScrollToLower = () => {
+  showBottomTip.value = true;
+  
+  // 如果当前不是最后一个分类，自动选中最后一个分类
+  const lastCategoryId = data.categories[data.categories.length - 1].id;
+  if (currentCategory.value !== lastCategoryId) {
+    currentCategory.value = lastCategoryId;
+  }
+};
+
+// 滚动事件处理
+const onScroll = (e) => {
+  if (isScrolling.value || isUserClicking.value) return;
+  
+  const scrollTop = e.detail.scrollTop;
+  
+  // 获取滚动区域的总高度和当前可见区域高度
+  const scrollHeight = e.detail.scrollHeight || 0;
+  const clientHeight = scrollViewHeight.value;
+  
+  // 检测是否滚动到底部或接近底部
+  const isNearBottom = scrollTop + clientHeight + 50 >= scrollHeight;
+  
+  // 如果接近底部，显示底部提示并选中最后一个分类
+  if (isNearBottom) {
+    showBottomTip.value = true;
+    const lastCategory = data.categories[data.categories.length - 1];
+    if (lastCategory && lastCategory.id !== currentCategory.value) {
+      currentCategory.value = lastCategory.id;
+    }
+    return;
+  } else if (scrollTop < scrollHeight - clientHeight - 200) {
+    // 如果距离底部还有一定距离，隐藏底部提示
+    showBottomTip.value = false;
+  }
+  
+  // 检测标题位置并更新左侧导航
+  detectVisibleTitles();
+};
+
+// 检测可见的标题并更新导航
+const detectVisibleTitles = () => {
+  // 创建选择器查询
+  const query = uni.createSelectorQuery();
+  
+  // 查询所有标题元素的位置
+  query.selectAll('.category-title').boundingClientRect(rects => {
+    if (!rects || !rects.length) return;
+    
+    // 找到最接近顶部的标题
+    let bestTitleIndex = -1;
+    let bestDistance = Infinity;
+    
+    // 定义严格的阈值范围 - 标题必须非常接近顶部
+    const topThreshold = 30; // 只考虑接近顶部30px范围内的标题
+    
+    rects.forEach((rect, index) => {
+      // 只有当标题接近顶部时才考虑更新导航
+      if (rect.top >= -topThreshold && rect.top <= topThreshold) {
+        const distance = Math.abs(rect.top);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestTitleIndex = index;
+        }
+      }
+    });
+    
+    // 如果找到了合适的标题，更新左侧导航
+    if (bestTitleIndex !== -1) {
+      const categoryId = data.categories[bestTitleIndex].id;
+      if (categoryId !== currentCategory.value) {
+        currentCategory.value = categoryId;
+      }
+    }
+  }).exec();
+};
+
+// 切换分类
+const switchCategory = (categoryId) => {
+  // 设置点击标志，防止滚动事件改变导航状态
+  isUserClicking.value = true;
+  currentCategory.value = categoryId;
+  
+  // 检查是否点击了最后一个分类
+  const isLastCategory = categoryId === data.categories[data.categories.length - 1].id;
+  if (isLastCategory) {
+    // 如果是最后一个分类，在滚动后显示底部提示
+    setTimeout(() => {
+      showBottomTip.value = true;
+    }, 300);
+  } else {
+    // 如果不是最后一个分类，隐藏底部提示
+    showBottomTip.value = false;
+  }
+  
+  // 防止滚动事件重复触发分类切换
+  isScrolling.value = true;
+  
+  // 使用scroll-into-view直接滚动到目标元素
+  scrollIntoView.value = `category-${categoryId}`;
+  
+  // 滚动完成后重新启用滚动事件监听
+  setTimeout(() => {
+    isScrolling.value = false;
+    
+    // 延迟一段时间后再允许滚动事件影响导航状态
+    setTimeout(() => {
+      isUserClicking.value = false;
+    }, 200);
+  }, 500);
+};
+
 // 跳转到课程详情
 const goToCourseDetail = (course) => {
-  console.log('跳转到课程:', course.title, '课程ID:', course.id, '价格:', course.price);
   // 显示加载提示
   uni.showLoading({
     title: '正在加载...'
   });
   
-  // 实际应用中，这里会跳转到对应的课程详情页
+  // 跳转到对应的课程详情页
   uni.navigateTo({
     url: `/pages/course/detail?id=${course.id}`,
     success: () => {
-      // 跳转成功后隐藏加载提示
       uni.hideLoading();
     },
     fail: (err) => {
@@ -601,15 +577,5 @@ const goToCourseDetail = (course) => {
   color: #999999;
   margin: 0 20rpx;
   font-weight: normal;
-}
-
-/* 监视器元素 - 用于位置检测 */
-.scroll-observer {
-  position: absolute;
-  width: 100%;
-  height: 2px;
-  background-color: transparent; /* 透明不可见 */
-  pointer-events: none; /* 不阻止触摸事件 */
-  z-index: -1;
 }
 </style> 
