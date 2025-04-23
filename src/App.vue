@@ -1,6 +1,4 @@
 <script>
-import { checkLoginAndNavigate } from './utils/auth';
-
 export default {
   globalData: {
     tempData: {},
@@ -8,11 +6,6 @@ export default {
   },
   onLaunch: function () {
     console.log('App Launch');
-    
-    // 检查登录状态并在需要时跳转到登录页
-    setTimeout(() => {
-      checkLoginAndNavigate(true);
-    }, 100);
     
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())

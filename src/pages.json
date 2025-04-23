@@ -72,25 +72,33 @@
   },
   "tabBar": {
     "color": "#7A7E83",
-    "selectedColor": "#f76c3f",
+    "selectedColor": "#1296db",
     "borderStyle": "black",
     "backgroundColor": "#ffffff",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/fonts/shouye.png",
+        "selectedIconPath": "static/fonts/shouye_c.png"
       },
       {
         "pagePath": "pages/courses/courses",
-        "text": "课程"
+        "text": "课程",
+        "iconPath": "static/fonts/kecheng.png",
+        "selectedIconPath": "static/fonts/kecheng_c.png"
       },
       {
         "pagePath": "pages/review/review",
-        "text": "评价"
+        "text": "评价",
+        "iconPath": "static/fonts/dianping.png",
+        "selectedIconPath": "static/fonts/dianping_c.png"
       },
       {
         "pagePath": "pages/mine/mine",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/fonts/yonghu.png",
+        "selectedIconPath": "static/fonts/yonghu_c.png"
       }
     ]
   }
