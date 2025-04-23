@@ -199,11 +199,17 @@ export default {
         icon: 'success'
       });
       
-      // 延迟跳转到首页
+      // 返回上一页或跳转首页
       setTimeout(() => {
-        uni.switchTab({
-          url: '/pages/index/index'
-        });
+        // 判断是否有上一页
+        const pages = getCurrentPages();
+        if (pages.length > 1) {
+          uni.navigateBack();
+        } else {
+          uni.switchTab({
+            url: '/pages/index/index'
+          });
+        }
       }, 1500);
       
       this.isLoading = false;
@@ -249,17 +255,15 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60rpx 40rpx;
-  height: 100vh;
-  background-color: #ffffff;
+  padding: 40rpx;
+  padding-top: calc(40rpx + var(--status-bar-height));
 }
 
 .logo-container {
+  margin-top: 60rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 100rpx;
-  margin-top: 100rpx;
 }
 
 .logo {
@@ -271,146 +275,140 @@ export default {
 .app-name {
   font-size: 48rpx;
   font-weight: bold;
-  color: #333333;
+  color: #333;
 }
 
 .login-form {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 100rpx;
 }
 
 .btn {
-  width: 90%;
+  width: 100%;
   height: 90rpx;
+  line-height: 90rpx;
+  text-align: center;
   border-radius: 45rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32rpx;
   margin-bottom: 30rpx;
+  font-size: 32rpx;
 }
 
 .btn-primary {
-  background-color: #07c160;
-  color: #ffffff;
+  background-color: #1296db;
+  color: #fff;
 }
 
 .btn-secondary {
-  background-color: #f8f8f8;
-  color: #333333;
-  border: 1px solid #dddddd;
+  background-color: #fff;
+  color: #1296db;
+  border: 1px solid #1296db;
 }
 
 .agreement {
   display: flex;
   align-items: center;
-  margin-top: 30rpx;
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 20rpx;
 }
 
 .agreement-text {
-  font-size: 26rpx;
-  color: #999999;
   margin-left: 10rpx;
+  line-height: 1.5;
 }
 
 .link {
-  color: #576b95;
+  color: #1296db;
 }
 
-/* 授权弹窗样式 */
 .userInfo_tank_bg {
   position: fixed;
   top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.3;
-  background: #000;
-  z-index: 666;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
 }
 
 .userInfo_tank {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: white;
   width: 100%;
-  border-radius: 30rpx 30rpx 0 0;
-  padding: 30rpx;
-  box-sizing: border-box;
+  height: 450rpx;
+  background: #fff;
   z-index: 999;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 30rpx;
   transform: translateY(100%);
+  transition: all 0.3s;
 }
 
 .transfromjoin {
-  transition: all 0.3s ease;
   transform: translateY(0);
 }
 
 .transfromout {
-  transition: all 0.3s ease;
   transform: translateY(100%);
 }
 
-.avatar_url {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
+.tank_title {
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-bottom: 40rpx;
 }
 
 .tank_content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #eee;
-  height: 100rpx;
-}
-
-.tank_content text {
-  color: #787376;
-}
-
-.tank_content input {
-  width: 80%;
-  text-align: right;
-}
-
-.tank_title {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 30rpx;
-  font-weight: 700;
+  margin-bottom: 30rpx;
+  
+  text {
+    width: 120rpx;
+    font-size: 28rpx;
+  }
+  
+  input {
+    flex: 1;
+    height: 80rpx;
+    border: 1px solid #eee;
+    border-radius: 10rpx;
+    padding: 0 20rpx;
+  }
+  
+  .avatar_button {
+    width: 120rpx;
+    height: 120rpx;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+  }
+  
+  .avatar_url {
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 50%;
+  }
 }
 
 .confirm_button {
   display: flex;
-  margin: 50rpx 0;
-  box-sizing: border-box;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  margin-top: 40rpx;
+  
+  view {
+    width: 45%;
+    
+    button {
+      width: 100%;
+      height: 80rpx;
+      line-height: 80rpx;
+      text-align: center;
+      border-radius: 40rpx;
+      font-size: 28rpx;
+    }
+  }
 }
-
-.confirm_button view {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-}
-
-.confirm_button view button {
-  width: 90%;
-}
-
-.avatar_button {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 80rpx !important;
-  height: 80rpx !important;
-  border-radius: 50% !important;
-  font-size: 32rpx !important;
-  overflow: visible !important;
-}
-</style>
- 
+</style> 

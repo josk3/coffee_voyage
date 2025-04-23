@@ -168,10 +168,10 @@ const handleLogin = () => {
     return;
   }
   
-  // 未登录则跳转到登录页面
+  // 未登录则跳转到带返回按钮的登录页面
   console.log("用户未登录，跳转到登录页面");
   uni.navigateTo({
-    url: "/pages/login/login",
+    url: "/pages/login/login-from-mine",
   });
 };
 
