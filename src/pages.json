@@ -1,6 +1,6 @@
 {
   "pages": [
-    {
+		{
       "path": "pages/index/index"
     },
     {
@@ -12,7 +12,7 @@
     },
     {
       "path": "pages/login/login",
-      "style": {
+			"style": {
         "navigationBarTitleText": "登录",
         "navigationStyle": "custom",
         "app-plus": {
@@ -30,7 +30,7 @@
       "path": "pages/courses/courses",
       "style": {
         "navigationBarTitleText": "课程"
-      }
+			}
     },
     {
       "path": "pages/mine/mine",
@@ -75,13 +75,13 @@
     },
     {
       "path": "pages/review/search"
-    }
-  ],
-  "globalStyle": {
-    "navigationBarTextStyle": "black",
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
     "navigationBarTitleText": "咖旅申城",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
   },
   "tabBar": {
     "color": "#7A7E83",
@@ -114,5 +114,5 @@
         "selectedIconPath": "static/fonts/yonghu_c.png"
       }
     ]
-  }
+	}
 }
