@@ -1,7 +1,7 @@
 // stores/user.js
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { auth } from '@/api';
+import { authAPI } from '@/api';
 
 export const useUserStore = defineStore('user', () => {
   // 用户信息状态
@@ -96,12 +96,17 @@ export const useUserStore = defineStore('user', () => {
   const logout = async () => {
     try {
       // 调用退出登录接口
-      await auth.logout();
+      await authAPI.logout();
     } catch (e) {
-      console.error('退出登录失败', e);
+      console.error('退出登录失败:', e);
     } finally {
-      // 无论接口是否成功，都清除本地存储的登录信息
-      clearUserInfo();
+      // 清除本地存储
+      uni.removeStorageSync('token');
+      uni.removeStorageSync('userInfo');
+      // 重置状态
+      token.value = '';
+      userInfo.value = null;
+      isLoggedIn.value = false;
     }
   };
   
@@ -110,14 +115,14 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value = null;
     token.value = '';
     isLoggedIn.value = false;
-    uni.removeStorageSync('token');
     uni.removeStorageSync('userInfo');
+    uni.removeStorageSync('token');
   };
   
-  // 初始化时，自动从本地存储恢复用户信息
+  // 初始化
   initUserInfo();
   
-  return { 
+  return {
     userInfo,
     token,
     isLoggedIn,
@@ -127,7 +132,6 @@ export const useUserStore = defineStore('user', () => {
     setToken,
     setLoginInfo,
     logout,
-    clearUserInfo,
-    initUserInfo
+    clearUserInfo
   };
 }); 

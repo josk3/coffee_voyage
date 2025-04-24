@@ -6,7 +6,7 @@
         class="coffee-item" 
         v-for="(item, index) in coffeeShops" 
         :key="index"
-        @click="goToDetail(item)"
+        @click="handleShopClick(item)"
       >
         <!-- 咖啡店logo -->
         <view class="coffee-logo">
@@ -41,128 +41,55 @@
           </view>
           
           <!-- 评价内容 -->
-          <view class="review-content">
+          <view class="review-content" v-if="item.latestReview">
             <!-- 用户头像 -->
-            <image :src="item.reviewer.avatar" class="reviewer-avatar"></image>
+            <image :src="item.latestReview.user.avatar" class="reviewer-avatar"></image>
             
             <!-- 评价文字 -->
-            <text class="review-text">"{{ item.reviewText }}"</text>
+            <text class="review-text">"{{ item.latestReview.content }}"</text>
           </view>
         </view>
       </view>
     </view>
+
+    <!-- 加载状态 -->
+    <view class="loading" v-if="loading">
+      <text>加载中...</text>
+    </view>
+    
+    <!-- 错误提示 -->
+    <view class="error" v-if="error">
+      <text>{{ error }}</text>
+      <button @click="onPullDownRefresh">重试</button>
+    </view>
   </view>
 </template>
 
-<script setup>
-import { ref } from 'vue';
+<script>
+import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
-// 模拟咖啡店数据
-const coffeeShops = ref([
-  {
-    id: 1,
-    name: 'LAVAZZA 拉瓦萨咖啡',
-    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg', // 占位图片路径
-    rating: 4.5,
-    reviewCount: 5,
-    price: 32,
-    reviewer: {
-      id: 101,
-      name: '用户1',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
-    },
-    reviewText: '环境很好,服务员很热情,推荐大家来'
+export default {
+  name: 'CoffeeShopList',
+  setup() {
+    const coffeeShopStore = useCoffeeShopStore();
+    coffeeShopStore.fetchCoffeeShopList();
+    return {
+      coffeeShops: coffeeShopStore.list,
+      loading: false,
+      error: null
+    };
   },
-  {
-    id: 2,
-    name: 'Manner Coffee',
-    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg', // 占位图片路径
-    rating: 3.8,
-    reviewCount: 13,
-    price: 22,
-    reviewer: {
-      id: 102,
-      name: '用户2',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
-    },
-    reviewText: '出品稳定,环境优美'
-  },
-  {
-    id: 3,
-    name: '星巴克',
-    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg', // 占位图片路径
-    rating: 4.1,
-    reviewCount: 86,
-    price: 32,
-    reviewer: {
-      id: 103,
-      name: '用户3',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
-    },
-    reviewText: '很喜欢这个店的位置,店内装修简洁敞亮,店内装修简洁敞亮店内装修简洁敞亮店内装修简洁敞亮'
-  },
-  {
-    id: 4,
-    name: 'Tims 天好咖啡',
-    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg', // 占位图片路径
-    rating: 4.0,
-    reviewCount: 44,
-    price: 22,
-    reviewer: {
-      id: 104,
-      name: '用户4',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp' // 占位图片路径
-    },
-    reviewText: '服务很专业'
+  methods: {
+    handleShopClick(item) {
+      uni.navigateTo({
+        url: `/pages/coffee-shop/detail?id=${item.id}`
+      });
+    }
   }
-]);
-
-// 跳转到详情页
-const goToDetail = (item) => {
-  console.log('查看咖啡店详情:', item.name);
-  
-  // 构建需要传递的数据对象
-  const itemData = {
-    id: item.id,
-    name: item.name,
-    rating: item.rating,
-    reviewCount: item.reviewCount,
-    price: item.price,
-    logo: item.logo,
-    address: '上海市静安区南京西路1788号', // 示例地址，实际应从item中获取
-    phone: '400-100-xxxx', // 示例电话，实际应从item中获取
-    images: [
-      item.logo, 
-      item.logo, 
-      item.logo
-    ], // 使用logo作为轮播图示例，实际应从item中获取多张图片
-    promotions: [
-      { type: '券', description: '新用户立减5元' },
-      { type: '折', description: '下单立减2元' }
-    ], // 示例优惠信息，实际应从item中获取
-    reviews: [
-      {
-        name: item.reviewer.name,
-        avatar: item.reviewer.avatar,
-        rating: item.rating,
-        date: '2023-12-01', // 示例日期，实际应从item中获取
-        text: item.reviewText,
-        images: []
-      }
-    ] // 示例评论，使用item中的评论信息
-  };
-  
-  // 通过globalData传递数据
-  getApp().globalData.tempData = itemData;
-  
-  // 跳转到详情页，只传递一个ID参数
-  uni.navigateTo({
-    url: `/pages/review/detail?id=${item.id}`
-  });
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .review-container {
   min-height: 100vh;
   background-color: #f5f5f5;
@@ -286,6 +213,19 @@ const goToDetail = (item) => {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 20rpx;
+  
+  text {
+    color: #999;
+  }
+  
+  button {
+    margin-top: 20rpx;
   }
 }
 </style> 
