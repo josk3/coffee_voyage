@@ -21,21 +21,15 @@
           <!-- 评分区域 -->
           <view class="rating-container">
             <!-- 星级评分 -->
-            <view class="stars">
-              <text
-                v-for="n in 5"
-                :key="n"
-                class="star"
-                :class="
-                  n <= Math.floor(item.rating)
-                    ? 'filled'
-                    : n - 0.5 <= item.rating
-                    ? 'half'
-                    : ''
-                "
-                >★</text
-              > </view
-            ><text class="rating">{{ item.rating.toFixed(1) }}</text
+            <uni-rate 
+              :value="item.rating" 
+              :size="18" 
+              :readonly="true" 
+              :allow-half="true"
+              active-color="#f76c3f"
+              inactive-color="#ddd"
+            />
+            <text class="rating">{{ item.rating.toFixed(1) }}</text
             ><text class="review-count">{{ item.reviewCount }}条</text
             ><text class="price">¥{{ item.price }}/人</text>
           </view>
@@ -66,6 +60,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useCoffeeShopStore } from "@/stores/coffeeShop";
+import uniRate from '@dcloudio/uni-ui/lib/uni-rate/uni-rate.vue';
 
 const coffeeShopStore = useCoffeeShopStore();
 const error = ref(null);
@@ -164,41 +159,12 @@ watch(
   margin-bottom: 20rpx;
   flex-wrap: nowrap;
 
-  .stars {
-    display: flex;
-    margin-right: 10rpx;
-    flex-shrink: 0;
-
-    .star {
-      color: #ddd;
-      font-size: 36rpx;
-      line-height: 1;
-
-      &.filled {
-        color: #f76c3f;
-      }
-
-      &.half {
-        position: relative;
-
-        &:after {
-          content: "★";
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 50%;
-          overflow: hidden;
-          color: #f76c3f;
-        }
-      }
-    }
-  }
-
   .rating {
     font-size: 30rpx;
     color: #f76c3f;
     font-weight: bold;
     margin-right: 10rpx;
+    margin-left: 10rpx;
     flex-shrink: 0;
   }
 
@@ -207,7 +173,6 @@ watch(
     color: #666;
     margin-right: 10rpx;
     margin-left: 10rpx;
-
     flex-shrink: 0;
   }
 

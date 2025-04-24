@@ -13,14 +13,14 @@
       
       <!-- 评分区域 -->
       <view class="rating-container">
-        <view class="stars">
-          <text 
-            v-for="n in 5" 
-            :key="n" 
-            class="star" 
-            :class="n <= Math.floor(coffeeShop.detail.rating) ? 'filled' : (n - 0.5 <= coffeeShop.detail.rating ? 'half' : '')"
-          >★</text>
-        </view>
+        <uni-rate 
+          :value="coffeeShop.detail.rating" 
+          :size="20" 
+          :readonly="true" 
+          :allow-half="true"
+          active-color="#f76c3f"
+          inactive-color="#ddd"
+        />
         <text class="rating">{{ coffeeShop.detail.rating.toFixed(1) }}</text>
         <text class="review-count">{{ coffeeShop.detail.reviewCount }}条评价</text>
       </view>
@@ -63,12 +63,14 @@
             <view class="reviewer-info">
               <text class="name">{{ item.user.name }}</text>
               <view class="rating">
-                <text 
-                  v-for="n in 5" 
-                  :key="n" 
-                  class="star" 
-                  :class="n <= item.rating ? 'filled' : ''"
-                >★</text>
+                <uni-rate 
+                  :value="item.rating" 
+                  :size="15" 
+                  :readonly="true" 
+                  :allow-half="false"
+                  active-color="#f76c3f"
+                  inactive-color="#ddd"
+                />
               </view>
             </view>
             <text class="date">{{ item.date }}</text>
@@ -160,10 +162,14 @@
 
 <script>
 import pageMixin from '@/mixins/page';
+import uniRate from '@dcloudio/uni-ui/lib/uni-rate/uni-rate.vue';
 
 export default {
   name: 'CoffeeShopDetail',
   mixins: [pageMixin],
+  components: {
+    uniRate
+  },
   
   data() {
     return {
@@ -340,39 +346,12 @@ export default {
       align-items: center;
       margin-bottom: 20rpx;
       
-      .stars {
-        display: flex;
-        margin-right: 10rpx;
-        
-        .star {
-          color: #ddd;
-          font-size: 40rpx;
-          
-          &.filled {
-            color: #f76c3f;
-          }
-          
-          &.half {
-            position: relative;
-            
-            &:after {
-              content: '★';
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 50%;
-              overflow: hidden;
-              color: #f76c3f;
-            }
-          }
-        }
-      }
-      
       .rating {
         font-size: 32rpx;
         color: #f76c3f;
         font-weight: bold;
         margin-right: 20rpx;
+        margin-left: 10rpx;
       }
       
       .review-count {
@@ -479,15 +458,6 @@ export default {
             
             .rating {
               display: flex;
-              
-              .star {
-                color: #ddd;
-                font-size: 24rpx;
-                
-                &.filled {
-                  color: #f76c3f;
-                }
-              }
             }
           }
           

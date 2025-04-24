@@ -13,14 +13,14 @@
       
       <!-- 评分区域 -->
       <view class="rating-container">
-        <view class="stars">
-          <text 
-            v-for="n in 5" 
-            :key="n" 
-            class="star" 
-            :class="n <= Math.floor(shopDetail.rating) ? 'filled' : (n - 0.5 <= shopDetail.rating ? 'half' : '')"
-          >★</text>
-        </view>
+        <uni-rate 
+          :value="shopDetail.rating" 
+          :size="18" 
+          :readonly="true" 
+          :allow-half="true"
+          active-color="#f76c3f"
+          inactive-color="#ddd"
+        />
         <text class="rating">{{ shopDetail.rating.toFixed(1) }}</text>
         <text class="review-count" @click="viewAllReviews">{{ shopDetail.reviewCount }}条评价 ></text>
         <text class="price">¥{{ shopDetail.price }}/人</text>
@@ -57,12 +57,14 @@
           <view class="reviewer-meta">
             <text class="reviewer-name" @click="viewUserProfile(review)">{{ review.name }}</text>
             <view class="review-rating">
-              <text 
-                v-for="n in 5" 
-                :key="n" 
-                class="star small" 
-                :class="n <= review.rating ? 'filled' : ''"
-              >★</text>
+              <uni-rate 
+                :value="review.rating" 
+                :size="15" 
+                :readonly="true" 
+                :allow-half="false"
+                active-color="#f76c3f"
+                inactive-color="#ddd"
+              />
               <text class="review-date">{{ review.date }}</text>
             </view>
           </view>
@@ -101,6 +103,7 @@
 <script setup>
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useCoffeeShopStore } from '@/stores/coffeeShop';
+import uniRate from '@dcloudio/uni-ui/lib/uni-rate/uni-rate.vue';
 
 // 咖啡店详情数据
 const shopDetail = ref({
@@ -409,41 +412,14 @@ const viewRecommendDetail = (item) => {
 .rating-container {
   display: flex;
   align-items: center;
-  margin-bottom: 30rpx;
-  
-  .stars {
-    display: flex;
-    margin-right: 10rpx;
-    
-    .star {
-      color: #ddd;
-      font-size: 36rpx;
-      
-      &.filled {
-        color: #f76c3f;
-      }
-      
-      &.half {
-        position: relative;
-        
-        &:after {
-          content: '★';
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 50%;
-          overflow: hidden;
-          color: #f76c3f;
-        }
-      }
-    }
-  }
+  margin-bottom: 20rpx;
   
   .rating {
     font-size: 32rpx;
     color: #f76c3f;
     font-weight: bold;
     margin-right: 20rpx;
+    margin-left: 10rpx;
   }
   
   .review-count {
