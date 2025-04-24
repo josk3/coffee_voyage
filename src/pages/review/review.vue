@@ -2,9 +2,9 @@
   <view class="review-container">
     <!-- 评价列表 -->
     <view class="coffee-list">
-      <view 
-        class="coffee-item" 
-        v-for="(item, index) in coffeeShops" 
+      <view
+        class="coffee-item"
+        v-for="(item, index) in coffeeShops"
         :key="index"
         @click="handleShopClick(item)"
       >
@@ -12,39 +12,42 @@
         <view class="coffee-logo">
           <image :src="item.logo" mode="aspectFill" class="logo-image"></image>
         </view>
-        
+
         <!-- 咖啡店信息 -->
         <view class="coffee-info">
           <!-- 咖啡店名称 -->
           <view class="coffee-name">{{ item.name }}</view>
-          
+
           <!-- 评分区域 -->
           <view class="rating-container">
             <!-- 星级评分 -->
             <view class="stars">
-              <text 
-                v-for="n in 5" 
-                :key="n" 
-                class="star" 
-                :class="n <= Math.floor(item.rating) ? 'filled' : (n - 0.5 <= item.rating ? 'half' : '')"
-              >★</text>
-            </view>
-            
-            <!-- 评分数值 -->
-            <text class="rating">{{ item.rating }}</text>
-            
-            <!-- 评价数量 -->
-            <text class="review-count">{{ item.reviewCount }}条</text>
-            
-            <!-- 人均价格 -->
-            <text class="price">¥{{ item.price }}/人</text>
+              <text
+                v-for="n in 5"
+                :key="n"
+                class="star"
+                :class="
+                  n <= Math.floor(item.rating)
+                    ? 'filled'
+                    : n - 0.5 <= item.rating
+                    ? 'half'
+                    : ''
+                "
+                >★</text
+              > </view
+            ><text class="rating">{{ item.rating }}</text
+            ><text class="review-count">{{ item.reviewCount }}条</text
+            ><text class="price">¥{{ item.price }}/人</text>
           </view>
-          
+
           <!-- 评价内容 -->
           <view class="review-content" v-if="item.latestReview">
             <!-- 用户头像 -->
-            <image :src="item.latestReview.user.avatar" class="reviewer-avatar"></image>
-            
+            <image
+              :src="item.latestReview.user.avatar"
+              class="reviewer-avatar"
+            ></image>
+
             <!-- 评价文字 -->
             <text class="review-text">"{{ item.latestReview.content }}"</text>
           </view>
@@ -52,11 +55,6 @@
       </view>
     </view>
 
-    <!-- 加载状态 -->
-    <view class="loading" v-if="loading">
-      <text>加载中...</text>
-    </view>
-    
     <!-- 错误提示 -->
     <view class="error" v-if="error">
       <text>{{ error }}</text>
@@ -66,33 +64,33 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useCoffeeShopStore } from '@/stores/coffeeShop';
+import { ref, watch } from "vue";
+import { useCoffeeShopStore } from "@/stores/coffeeShop";
 
 const coffeeShopStore = useCoffeeShopStore();
-const loading = ref(true);
 const error = ref(null);
 
 coffeeShopStore.fetchCoffeeShopList();
-console.log('coffeeShopStore.list', coffeeShopStore.list);
+console.log("coffeeShopStore.list", coffeeShopStore.list);
 
 function handleShopClick(item) {
   uni.navigateTo({
-    url: `/pages/coffee-shop/detail?id=${item.id}`
+    url: `/pages/coffee-shop/detail?id=${item.id}`,
   });
 }
 
 function onPullDownRefresh() {
-  loading.value = true;
-  error.value = null;
   coffeeShopStore.fetchCoffeeShopList();
 }
 
 const coffeeShops = ref(coffeeShopStore.list);
 
-watch(() => coffeeShopStore.list, (newList) => {
-  coffeeShops.value = newList;
-});
+watch(
+  () => coffeeShopStore.list,
+  (newList) => {
+    coffeeShops.value = newList;
+  }
+);
 </script>
 
 <style lang="scss" scoped>
@@ -120,7 +118,7 @@ watch(() => coffeeShopStore.list, (newList) => {
   height: 180rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
-  
+
   .logo-image {
     width: 100%;
     height: 100%;
@@ -145,24 +143,27 @@ watch(() => coffeeShopStore.list, (newList) => {
   display: flex;
   align-items: center;
   margin-bottom: 20rpx;
-  
+  flex-wrap: nowrap;
+
   .stars {
     display: flex;
     margin-right: 10rpx;
-    
+    flex-shrink: 0;
+
     .star {
       color: #ddd;
-      font-size: 40rpx;
-      
+      font-size: 36rpx;
+      line-height: 1;
+
       &.filled {
         color: #f76c3f;
       }
-      
+
       &.half {
         position: relative;
-        
+
         &:after {
-          content: '★';
+          content: "★";
           position: absolute;
           left: 0;
           top: 0;
@@ -173,23 +174,29 @@ watch(() => coffeeShopStore.list, (newList) => {
       }
     }
   }
-  
+
   .rating {
-    font-size: 32rpx;
+    font-size: 30rpx;
     color: #f76c3f;
     font-weight: bold;
-    margin-right: 20rpx;
+    margin-right: 10rpx;
+    flex-shrink: 0;
   }
-  
+
   .review-count {
-    font-size: 28rpx;
+    font-size: 26rpx;
     color: #666;
-    margin-right: 20rpx;
+    margin-right: 10rpx;
+    margin-left: 10rpx;
+
+    flex-shrink: 0;
   }
-  
+
   .price {
-    font-size: 28rpx;
+    font-size: 26rpx;
     color: #666;
+    flex-shrink: 0;
+    margin-left: 10rpx;
   }
 }
 
@@ -198,7 +205,7 @@ watch(() => coffeeShopStore.list, (newList) => {
   margin-top: 10rpx;
   min-height: 50rpx;
   align-items: center;
-  
+
   .reviewer-avatar {
     width: 50rpx;
     height: 50rpx;
@@ -207,7 +214,7 @@ watch(() => coffeeShopStore.list, (newList) => {
     flex-shrink: 0;
     background-color: #eee;
   }
-  
+
   .review-text {
     font-size: 28rpx;
     color: #666;
@@ -222,16 +229,16 @@ watch(() => coffeeShopStore.list, (newList) => {
   }
 }
 
-.loading, .error {
+.error {
   text-align: center;
   padding: 20rpx;
-  
+
   text {
     color: #999;
   }
-  
+
   button {
     margin-top: 20rpx;
   }
 }
-</style> 
+</style>

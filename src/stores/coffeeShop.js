@@ -10,9 +10,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
   actions: {
     setCoffeeShopList(coffeeShops) {
       this.list = coffeeShops;
-      nextTick(() => {
-        console.log('Items:', this.list);
-      });
     },
     async fetchCoffeeShopList() {
       try {
@@ -20,11 +17,8 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: 'http://localhost:3000/api/coffee-shops',
           method: 'GET',
           success: (res) => {
-            console.log('API Response:', res);
             if (res.statusCode === 200) {
-              console.log('Fetched items:', res.data.data.items);
               this.setCoffeeShopList(res.data.data.items);
-              console.log('Data loaded:', res.data.data.items);
             } else {
               throw new Error('Failed to fetch coffee shops');
             }
