@@ -149,6 +149,7 @@
   "message": "获取成功",
   "data": [
     {
+      "_id": "60d5ec9af682fbd12a0041b1",
       "userId": "108",
       "userName": "用户8",
       "userAvatar": "https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp",
@@ -157,8 +158,7 @@
       "images": [
         "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg"
       ],
-      "createdAt": "2024-03-01T00:00:00.000Z",
-      "_id": "60d5ec9af682fbd12a0041b1"
+      "createdAt": "2024-03-01T00:00:00.000Z"
     },
     // 更多评论...
   ]
@@ -171,7 +171,7 @@
 
 - **URL**: `/coffee-shops/:shopId/reviews`
 - **方法**: `POST`
-- **权限**: 需要登录
+- **权限**: 公开
 
 **路径参数**:
 
@@ -182,9 +182,12 @@
 **请求体**:
 ```json
 {
-  "rating": 4.5,
-  "content": "咖啡很香，环境也很舒适",
-  "images": [
+  "userId": "user123",      // 可选
+  "userName": "张三",       // 必填，用户昵称
+  "userAvatar": "https://example.com/avatar.jpg",  // 必填，用户头像
+  "rating": 4.5,            // 必填，评分
+  "content": "咖啡很香，环境也很舒适",  // 必填，评论内容
+  "images": [               // 可选，评论图片
     "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg"
   ]
 }
@@ -196,7 +199,44 @@
   "success": true,
   "message": "评论添加成功",
   "data": {
-    // 返回更新后的咖啡店对象
+    "reviewId": "64a5ec9af682fbd12a0041c3",
+    "shopId": "60d5ec9af682fbd12a0041a5",
+    "userName": "张三",
+    "userAvatar": "https://example.com/avatar.jpg",
+    "rating": 4.5,
+    "content": "咖啡很香，环境也很舒适",
+    "images": [
+      "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg"
+    ],
+    "createdAt": "2024-07-01T08:30:45.123Z"
+  }
+}
+```
+
+### 5. 删除咖啡店评论
+
+删除特定咖啡店的评论。
+
+- **URL**: `/coffee-shops/:shopId/reviews/:reviewId`
+- **方法**: `DELETE`
+- **权限**: 公开
+
+**路径参数**:
+
+| 参数名 | 类型 | 描述 |
+|--------|------|------|
+| shopId | String | 咖啡店ID |
+| reviewId | String | 评论ID |
+
+**响应数据**:
+```json
+{
+  "success": true,
+  "message": "评论删除成功",
+  "data": {
+    "reviewId": "64a5ec9af682fbd12a0041c3",
+    "shopId": "60d5ec9af682fbd12a0041a5",
+    "deletedAt": "2024-07-01T09:15:30.456Z"
   }
 }
 ```
@@ -215,5 +255,6 @@
 
 1. 咖啡店详情页应使用 `/coffee-shops/:id` 接口获取完整数据
 2. 评论列表已包含在详情接口中，无需单独请求
-3. 添加评论接口需要用户登录，前端应处理未登录用户的情况
-4. 图片URL应直接使用，无需额外处理 
+3. 添加评论接口无需用户登录，但必须提供用户昵称和头像
+4. 删除评论需要提供有效的评论ID
+5. 图片URL应直接使用，无需额外处理 

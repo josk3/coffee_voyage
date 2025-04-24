@@ -52,6 +52,11 @@
               @click="previewImage(review.images, imgIndex)"
             ></image>
           </view>
+          
+          <!-- 删除按钮 -->
+          <view class="review-actions">
+            <view class="delete-btn" @click="confirmDelete(review, index)">删除评价</view>
+          </view>
         </view>
         
         <!-- 分隔线 -->
@@ -100,6 +105,45 @@ const previewImage = (images, current) => {
     current,
     urls: images
   });
+};
+
+// 确认删除评价
+const confirmDelete = (review, index) => {
+  uni.showModal({
+    title: '删除评价',
+    content: '确定要删除这条评价吗？',
+    confirmColor: '#f76c3f',
+    success: (res) => {
+      if (res.confirm) {
+        deleteReview(review, index);
+      }
+    }
+  });
+};
+
+// 删除评价
+const deleteReview = (review, index) => {
+  // 获取评论ID
+  const reviewId = review._id || review.id;
+  
+  if (!reviewId) {
+    uni.showToast({
+      title: '评价ID不存在',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  // 使用store中的方法删除评论
+  coffeeShopStore.deleteReview(shopId.value, reviewId)
+    .then(() => {
+      // 删除成功后从当前页面的列表中移除
+      reviews.value.splice(index, 1);
+    })
+    .catch(error => {
+      console.error('删除评价失败:', error);
+      // 错误处理已在store中完成，这里不需要额外处理
+    });
 };
 
 // 从服务器获取评价数据
@@ -322,6 +366,7 @@ onMounted(() => {
     .review-images {
       display: flex;
       flex-wrap: wrap;
+      margin-bottom: 20rpx;
       
       .review-image {
         width: 210rpx;
@@ -329,6 +374,24 @@ onMounted(() => {
         margin-right: 15rpx;
         margin-bottom: 15rpx;
         border-radius: 8rpx;
+      }
+    }
+    
+    .review-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10rpx;
+      
+      .delete-btn {
+        font-size: 26rpx;
+        color: #f76c3f;
+        background-color: #fff;
+        border: 1px solid #f76c3f;
+        border-radius: 30rpx;
+        padding: 6rpx 20rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }

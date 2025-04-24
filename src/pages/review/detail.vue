@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
 // 咖啡店详情数据
@@ -180,6 +180,32 @@ const fetchShopDetail = (shopId) => {
     });
 };
 
+// 页面数据刷新方法
+const fetchData = (id) => {
+  // 获取咖啡店详情的代码，根据实际情况修改
+  uni.showLoading({
+    title: '加载中...',
+    mask: true
+  });
+  
+  // 使用store中的方法获取数据
+  coffeeShopStore.fetchCoffeeShopDetail(id)
+    .then(response => {
+      console.log('刷新成功，获取到最新数据');
+      shopDetail.value = response;
+    })
+    .catch(error => {
+      console.error('刷新数据失败', error);
+      uni.showToast({
+        title: '刷新数据失败',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      uni.hideLoading();
+    });
+};
+
 onMounted(() => {
   // 获取路由参数中的shopId
   let shopId = '';
@@ -199,6 +225,19 @@ onMounted(() => {
       icon: 'none'
     });
   }
+  
+  // 添加全局事件监听，用于刷新详情数据
+  uni.$on('refreshShopDetail', (data) => {
+    console.log('收到刷新事件:', data);
+    if (data && data.shopId) {
+      fetchData(data.shopId);
+    }
+  });
+});
+
+onUnmounted(() => {
+  // 页面卸载时移除事件监听，防止内存泄漏
+  uni.$off('refreshShopDetail');
 });
 
 // 点击轮播图

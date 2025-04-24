@@ -80,6 +80,7 @@ const reviewText = ref('');
 const uploadedImages = ref([]);
 const isAnonymous = ref(false);
 const rating = ref(5); // 默认评分为5星
+const userInfo = ref(null); // 用户信息
 
 // API基础URL
 const baseUrl = 'http://localhost:3000/api';
@@ -210,54 +211,120 @@ const handlePublish = () => {
     return;
   }
   
-  // 展示提交中加载框
-  uni.showLoading({
-    title: '发布中...',
-    mask: true
-  });
+  // 获取用户信息
+  const savedUserInfo = uni.getStorageSync('userInfo');
+  if (!savedUserInfo || !savedUserInfo.nickName || !savedUserInfo.avatarUrl) {
+    uni.showModal({
+      title: '提示',
+      content: '需要提供用户信息才能发表评论',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          // 跳转到登录页面
+          uni.navigateTo({
+            url: '/pages/login/login'
+          });
+        }
+      }
+    });
+    return;
+  }
   
-  // 准备提交的数据
+  // 准备提交的数据，按照API文档要求
   const reviewData = {
     rating: rating.value,
     content: reviewText.value,
     images: uploadedImages.value,
-    anonymous: isAnonymous.value
+    userName: savedUserInfo.nickName,
+    userAvatar: savedUserInfo.avatarUrl,
+    // 如果用户选择匿名，则使用默认头像和名称
+    ...(isAnonymous.value && {
+      userName: "匿名用户",
+      userAvatar: "https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0"
+    })
   };
+  
+  console.log('准备提交评价数据:', JSON.stringify(reviewData));
   
   // 调用API提交评价
   uni.request({
     url: `${baseUrl}/coffee-shops/${shopId.value}/reviews`,
     method: 'POST',
     header: {
-      'content-type': 'application/json',
-      'Authorization': 'Bearer ' + uni.getStorageSync('token') // 需要登录认证
+      'content-type': 'application/json'
     },
     data: reviewData,
     success: (res) => {
-      if (res.statusCode === 200 && res.data.success) {
-        uni.showToast({
-          title: '评价发布成功',
-          icon: 'success',
-          duration: 2000
+      console.log('评价提交响应:', JSON.stringify(res.data));
+      
+      // 使用状态码判断成功，不依赖于特定的返回格式
+      if (res.statusCode === 200 || res.statusCode === 201) {
+        
+        // 发送全局事件通知详情页刷新数据
+        uni.$emit('refreshShopDetail', {
+          shopId: shopId.value,
+          timestamp: Date.now()
         });
         
         // 延迟返回上一页
         setTimeout(() => {
-          uni.navigateBack();
-        }, 2000);
+          // 显示提示正在刷新数据
+          uni.showLoading({
+            title: '正在刷新数据...',
+            mask: true
+          });
+        }, 1000);
+        
+        // 再延迟返回上一页，给足够时间刷新数据
+        setTimeout(() => {
+          // uni.hideLoading();
+          uni.showToast({
+            title: '刷新完成，正在返回',
+            icon: 'none',
+            duration: 800
+          });
+          
+          // 最后返回上一页
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 800);
+        }, 2500);
+      } else if (res.statusCode === 401) {
+        // 处理401未授权错误
+        uni.hideLoading();
+        
+        uni.showModal({
+          title: '授权失败',
+          content: '您的操作未授权，请尝试重新登录',
+          confirmText: '去登录',
+          success: (res) => {
+            if (res.confirm) {
+              // 跳转到登录页面
+              uni.navigateTo({
+                url: '/pages/login/login'
+              });
+            }
+          }
+        });
       } else {
+        // 处理其他错误响应
+        let errorMsg = '评价发布失败';
+        if (res.data && (res.data.message || res.data.msg)) {
+          errorMsg = res.data.message || res.data.msg;
+        }
+        
         uni.showToast({
-          title: res.data.message || '评价发布失败',
+          title: errorMsg,
           icon: 'none'
         });
       }
     },
     fail: (err) => {
+      console.error('提交评价失败:', err);
       uni.showToast({
         title: '网络错误，请稍后重试',
         icon: 'none'
       });
-      console.error('提交评价失败:', err);
     },
     complete: () => {
       uni.hideLoading();
@@ -282,6 +349,9 @@ onMounted(() => {
       uni.navigateBack();
     }, 1500);
   }
+  
+  // 获取用户信息
+  userInfo.value = uni.getStorageSync('userInfo');
 });
 </script>
 
