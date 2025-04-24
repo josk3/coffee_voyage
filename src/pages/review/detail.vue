@@ -48,10 +48,11 @@
     <view class="reviews-section">
       <view class="section-header">
         <text class="section-title">用户评价({{ shopDetail.reviewCount }})</text>
-        <text class="view-all" @click="viewAllReviews">查看全部 ></text>
+        <view class="view-all" @click="viewAllReviews">查看全部 ></view>
       </view>
       
-      <view class="review-item" v-for="(review, index) in shopDetail.reviews" :key="index">
+      <!-- 显示最多3条评论 -->
+      <view class="review-item" v-for="(review, index) in shopDetail.reviews.slice(0, 3)" :key="index">
         <view class="reviewer-info">
           <image :src="review.avatar" class="reviewer-avatar" @click="viewUserProfile(review)"></image>
           <view class="reviewer-meta">
@@ -71,28 +72,38 @@
         </view>
         <text class="review-text">{{ review.text }}</text>
         
-        <!-- 评价图片 -->
         <view class="review-images" v-if="review.images && review.images.length">
           <image 
             v-for="(img, imgIndex) in review.images" 
-            :key="imgIndex"
-            :src="img"
+            :key="imgIndex" 
+            :src="img" 
             mode="aspectFill"
             class="review-image"
             @click="viewReviewImage(review, imgIndex)"
           ></image>
         </view>
       </view>
+      
+      <!-- 如果没有评论，显示提示 -->
+      <view class="no-reviews" v-if="!shopDetail.reviews || shopDetail.reviews.length === 0">
+        暂无评价，快来成为第一个评价的人吧！
+      </view>
+      
+      <!-- 当评论数量超过3条时，在底部显示查看全部按钮 -->
+      <view class="view-more-reviews" v-if="shopDetail.reviews && shopDetail.reviews.length > 3" @click="viewAllReviews">
+        <text>查看全部{{ shopDetail.reviewCount }}条评价</text>
+        <uni-icons type="right" size="14" color="#666"></uni-icons>
+      </view>
     </view>
     
     <!-- 底部操作栏 -->
     <view class="footer-actions">
       <view class="action-btn share-btn" @click="handleShare">
-        <text class="action-icon">💬</text>
+        <uni-icons type="redo" size="24" color="#666"></uni-icons>
         <text class="action-text">分享</text>
       </view>
       <view class="action-btn favorite-btn" @click="handleFavorite">
-        <text class="action-icon">❤️</text>
+        <uni-icons type="star" size="24" color="#666"></uni-icons>
         <text class="action-text">收藏</text>
       </view>
       <view class="action-btn write-review-btn" @click="handleWriteReview">写评价</view>
@@ -104,6 +115,7 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue';
 import { useCoffeeShopStore } from '@/stores/coffeeShop';
 import uniRate from '@dcloudio/uni-ui/lib/uni-rate/uni-rate.vue';
+import uniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
 
 // 咖啡店详情数据
 const shopDetail = ref({
@@ -529,7 +541,7 @@ const viewRecommendDetail = (item) => {
 
 .reviews-section {
   background-color: #fff;
-  padding: 30rpx;
+  padding: 30rpx 30rpx 0 30rpx;
   
   .section-header {
     display: flex;
@@ -546,6 +558,30 @@ const viewRecommendDetail = (item) => {
     .view-all {
       font-size: 28rpx;
       color: #666;
+      padding: 5rpx 15rpx;
+      background-color: #f8f8f8;
+      border-radius: 20rpx;
+    }
+  }
+  
+  .no-reviews {
+    text-align: center;
+    color: #999;
+    font-size: 28rpx;
+    padding: 30rpx 0;
+  }
+  
+  .view-more-reviews {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20rpx 0;
+    border-top: 1rpx solid #f2f2f2;
+    color: #666;
+    font-size: 28rpx;
+    
+    text {
+      margin-right: 10rpx;
     }
   }
   

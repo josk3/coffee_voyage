@@ -25,8 +25,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
             url: 'http://localhost:3000/api/coffee-shops',
             method: 'GET',
             success: (res) => {
-              console.log('咖啡店列表响应数据:', JSON.stringify(res.data));
-              
               if (res.statusCode === 200) {
                 // 检查返回数据格式
                 if (res.data && res.data.data && Array.isArray(res.data.data.items)) {
@@ -64,7 +62,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: `http://localhost:3000/api/coffee-shops/${id}`,
           method: 'GET',
           success: (res) => {
-            console.log('API响应数据:', JSON.stringify(res.data));
             
             // 无论响应如何，都将数据存储并返回
             if (res.statusCode === 200) {
@@ -79,7 +76,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
                 resolve(res.data);
               }
             } else {
-              console.error('API响应状态码异常:', res.statusCode, res.data);
               reject(new Error('获取详情失败: ' + (res.data.message || '未知错误')));
             }
           },
@@ -96,8 +92,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews`,
           method: 'GET',
           success: (res) => {
-            console.log('获取评价响应数据:', JSON.stringify(res.data));
-            
             // 修改判断逻辑，只要状态码为200就认为成功
             if (res.statusCode === 200) {
               // 检查返回的数据是否有效
@@ -116,6 +110,9 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
                   text: item.content || item.text,
                   images: item.images || []
                 }));
+
+                console.log('评价数据:', formattedReviews);
+                
                 
                 this.setShopReviews(formattedReviews);
                 resolve(formattedReviews);
@@ -125,7 +122,6 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
                 resolve([]);
               }
             } else {
-              console.error('API响应状态码异常:', res.statusCode, res.data);
               reject(new Error('获取评价失败: ' + (res.data.message || '未知错误')));
             }
           },
