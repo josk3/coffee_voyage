@@ -25,29 +25,6 @@
         <text class="review-count" @click="viewAllReviews">{{ shopDetail.reviewCount }}条评价 ></text>
         <text class="price">¥{{ shopDetail.price }}/人</text>
       </view>
-      
-      <!-- 地址信息 -->
-      <view class="address-container">
-        <view class="address" @click="handleAddressClick">
-          <text class="icon location-icon">📍</text>
-          <text class="address-text">{{ shopDetail.address }}</text>
-          <text class="icon arrow-icon">></text>
-        </view>
-        <view class="phone" @click="handlePhoneClick">
-          <text class="icon phone-icon">📞</text>
-          <text class="phone-text">{{ shopDetail.phone }}</text>
-          <text class="icon arrow-icon">></text>
-        </view>
-      </view>
-    </view>
-    
-    <!-- 优惠活动 -->
-    <view class="promotion-section">
-      <view class="section-title">优惠活动</view>
-      <view class="promotion-item" v-for="(promo, index) in shopDetail.promotions" :key="index" @click="handlePromoClick(promo)">
-        <text class="promo-tag">{{ promo.type }}</text>
-        <text class="promo-desc">{{ promo.description }}</text>
-      </view>
     </view>
     
     <!-- 推荐菜区域 -->
@@ -123,60 +100,23 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
+// 咖啡店详情数据
 const shopDetail = ref({
-  id: 0,
-  name: '瑞幸咖啡',
-  rating: 4.1,
+  id: '',
+  name: '',
+  rating: 0,
   reviewCount: 0,
-  price: 15,
-  address: '上海市静安区南京西路1788号',
-  phone: '400-100-xxxx',
-  images: [
-    'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg'
-  ],
-  promotions: [
-    { type: '券', description: '新用户立减5元' },
-    { type: '折', description: '下单立减2元' },
-    { type: '赠', description: '消费满30元赠小食一份' }
-  ],
-  reviews: [
-    {
-      name: '用户1',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
-      rating: 5,
-      date: '2023-12-01',
-      text: '环境很好，服务员很热情，推荐大家来。咖啡味道醇厚，价格也实惠，下次还会再来的。',
-      images: [
-        'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-        'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg'
-      ]
-    },
-    {
-      name: '用户2',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
-      rating: 4,
-      date: '2023-11-25',
-      text: '出品稳定，环境优美，就是有时人太多了',
-      images: []
-    },
-    {
-      name: '匿名用户',
-      avatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
-      level: 'Lv4',
-      date: '2月26日',
-      rating: 4.5,
-      text: '在食堂里面开的，没啥服务，做好了自己拿就行，味道还可以，价格还行，提神醒脑来一杯，环境还行，座位不多，做咖啡的速度还是挺快的，下单一会儿就做好了，可以快速拿到，不推荐饭点去，可能需要等，人会多一点，其他时候还好',
-      images: [
-        'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg'
-      ]
-    }
-  ]
+  price: 0,
+  images: [],
+  reviews: []
 });
 
-// 推荐菜数据
+// 从store中获取数据
+const coffeeShopStore = useCoffeeShopStore();
+
+// 推荐菜数据 (暂时保留静态数据，API未提供推荐菜接口)
 const recommendItems = ref([
   {
     id: 1,
@@ -204,25 +144,65 @@ const recommendItems = ref([
   }
 ]);
 
-// 计算总评价数
-const totalReviewCount = computed(() => {
-  return shopDetail.value.reviews.length;
-});
+// API基础URL
+const baseUrl = 'http://localhost:3000/api';
 
-onMounted(() => {
-  // 使用globalData获取数据
-  const app = getApp();
-  if (app.globalData && app.globalData.tempData) {
-    shopDetail.value = Object.assign({}, shopDetail.value, app.globalData.tempData);
+// 获取咖啡店详情数据
+const fetchShopDetail = (shopId) => {
+  // 检查store中是否已有数据
+  if (coffeeShopStore.detail && 
+     ((coffeeShopStore.detail.id && coffeeShopStore.detail.id === shopId) || 
+      (coffeeShopStore.detail._id && coffeeShopStore.detail._id === shopId))) {
+    shopDetail.value = coffeeShopStore.detail;
+    return;
   }
   
-  // 更新评价数量
-  shopDetail.value.reviewCount = totalReviewCount.value;
+  // 如果store中没有数据，则请求新数据
+  uni.showLoading({
+    title: '加载中...'
+  });
+  
+  coffeeShopStore.fetchCoffeeShopDetail(shopId)
+    .then(data => {
+      console.log('获取到的咖啡店详情:', JSON.stringify(data));
+      shopDetail.value = data;
+    })
+    .catch(err => {
+      uni.showToast({
+        title: '获取数据失败',
+        icon: 'none',
+        duration: 2000
+      });
+      console.error('获取咖啡店详情失败:', err);
+    })
+    .finally(() => {
+      uni.hideLoading();
+    });
+};
+
+onMounted(() => {
+  // 获取路由参数中的shopId
+  let shopId = '';
+  
+  // 尝试从页面参数获取shopId
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1];
+  if (currentPage && currentPage.options) {
+    shopId = currentPage.options.id || '';
+  }
+  
+  if (shopId) {
+    fetchShopDetail(shopId);
+  } else {
+    uni.showToast({
+      title: '参数错误',
+      icon: 'none'
+    });
+  }
 });
 
 // 点击轮播图
 const handleImageClick = (index) => {
-  console.log('点击了轮播图:', index);
   // 预览图片
   uni.previewImage({
     current: index,
@@ -232,65 +212,14 @@ const handleImageClick = (index) => {
 
 // 查看全部评价
 const viewAllReviews = () => {
-  console.log('查看全部评价');
-  
-  // 将评价数据存储到全局变量中
-  const app = getApp();
-  app.globalData.tempData = {
-    shopName: shopDetail.value.name,
-    reviews: shopDetail.value.reviews
-  };
-  
   // 跳转到评价列表页
   uni.navigateTo({
-    url: '/pages/review/review-list?shopId=' + shopDetail.value.id
-  });
-};
-
-// 点击地址
-const handleAddressClick = () => {
-  console.log('点击了地址:', shopDetail.value.address);
-  // 打开地图
-  uni.showToast({
-    title: '即将打开地图',
-    icon: 'none'
-  });
-};
-
-// 点击电话
-const handlePhoneClick = () => {
-  console.log('点击了电话:', shopDetail.value.phone);
-  uni.showModal({
-    title: '提示',
-    content: `是否拨打电话 ${shopDetail.value.phone}？`,
-    success: function (res) {
-      if (res.confirm) {
-        uni.makePhoneCall({
-          phoneNumber: shopDetail.value.phone,
-          fail: () => {
-            uni.showToast({
-              title: '拨打电话失败',
-              icon: 'none'
-            });
-          }
-        });
-      }
-    }
-  });
-};
-
-// 点击优惠活动
-const handlePromoClick = (promo) => {
-  console.log('点击了优惠活动:', promo);
-  uni.showToast({
-    title: `${promo.type}: ${promo.description}`,
-    icon: 'none'
+    url: `/pages/review/review-list?shopId=${shopDetail.value.id}`
   });
 };
 
 // 查看用户资料
 const viewUserProfile = (review) => {
-  console.log('查看用户资料:', review.name);
   uni.showToast({
     title: '暂未开放此功能',
     icon: 'none'
@@ -299,7 +228,6 @@ const viewUserProfile = (review) => {
 
 // 查看评价图片
 const viewReviewImage = (review, imgIndex) => {
-  console.log('查看评价图片:', imgIndex);
   // 预览图片
   uni.previewImage({
     current: imgIndex,
@@ -309,7 +237,6 @@ const viewReviewImage = (review, imgIndex) => {
 
 // 分享
 const handleShare = () => {
-  console.log('分享');
   uni.showShareMenu({
     withShareTicket: true,
     menus: ['shareAppMessage', 'shareTimeline']
@@ -318,7 +245,6 @@ const handleShare = () => {
 
 // 收藏
 const handleFavorite = () => {
-  console.log('收藏');
   uni.showToast({
     title: '收藏成功',
     icon: 'success'
@@ -327,27 +253,18 @@ const handleFavorite = () => {
 
 // 写评价
 const handleWriteReview = () => {
-  console.log('写评价');
-  
-  // 从console中检查shopDetail的name值
-  console.log('店铺信息:', shopDetail.value.name, shopDetail.value.id);
-  
-  // 将店铺信息存储到全局变量中
+  // 使用全局数据传递商店信息
   const app = getApp();
   if (!app.globalData) {
     app.globalData = {};
   }
   
-  // 使用全局数据传递商店信息
   app.globalData.shopInfo = {
     id: shopDetail.value.id,
-    name: shopDetail.value.name,
-    address: shopDetail.value.address
+    name: shopDetail.value.name
   };
   
-  console.log('全局数据已设置:', app.globalData.shopInfo);
-  
-  // 直接跳转到写评价页面，无需传递复杂参数
+  // 跳转到写评价页面
   uni.navigateTo({
     url: '/pages/review/write-review'
   });
@@ -355,7 +272,6 @@ const handleWriteReview = () => {
 
 // 查看全部推荐菜
 const viewAllRecommends = () => {
-  console.log('查看全部推荐菜');
   // 跳转到推荐菜列表页面
   uni.navigateTo({
     url: `/pages/review/recommend-list?shopId=${shopDetail.value.id}&shopName=${encodeURIComponent(shopDetail.value.name)}`
@@ -364,7 +280,6 @@ const viewAllRecommends = () => {
 
 // 查看推荐菜详情
 const viewRecommendDetail = (item) => {
-  console.log('查看推荐菜详情:', item.name);
   uni.showToast({
     title: `查看${item.name}详情`,
     icon: 'none'
@@ -450,33 +365,6 @@ const viewRecommendDetail = (item) => {
   .price {
     font-size: 28rpx;
     color: #666;
-  }
-}
-
-.address-container {
-  .address, .phone {
-    display: flex;
-    align-items: center;
-    padding: 20rpx 0;
-    
-    .icon {
-      margin-right: 15rpx;
-      font-size: 32rpx;
-    }
-    
-    .address-text, .phone-text {
-      flex: 1;
-      font-size: 28rpx;
-      color: #333;
-    }
-    
-    .arrow-icon {
-      color: #999;
-    }
-  }
-  
-  .address {
-    border-bottom: 1px solid #f0f0f0;
   }
 }
 

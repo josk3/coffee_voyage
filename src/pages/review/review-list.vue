@@ -76,6 +76,10 @@ import { ref, onMounted } from 'vue';
 
 const shopName = ref('');
 const reviews = ref([]);
+const shopId = ref('');
+
+// API基础URL
+const baseUrl = 'http://localhost:3000/api';
 
 // 获取评分描述
 const getRatingLabel = (rating) => {
@@ -94,20 +98,82 @@ const previewImage = (images, current) => {
   });
 };
 
+// 从服务器获取评价数据
+const fetchReviews = (id) => {
+  uni.showLoading({
+    title: '加载中...'
+  });
+  
+  uni.request({
+    url: `${baseUrl}/coffee-shops/${id}/reviews`,
+    method: 'GET',
+    success: (res) => {
+      if(res.statusCode === 200 && res.data.success) {
+        reviews.value = res.data.data.map(item => ({
+          name: item.userName || '匿名用户',
+          avatar: item.userAvatar,
+          rating: item.rating,
+          date: formatDate(item.createdAt),
+          text: item.content,
+          images: item.images || []
+        }));
+      } else {
+        uni.showToast({
+          title: res.data.message || '获取评价失败',
+          icon: 'none'
+        });
+      }
+    },
+    fail: (err) => {
+      console.error('获取评价失败:', err);
+      uni.showToast({
+        title: '网络错误，请稍后重试',
+        icon: 'none'
+      });
+    },
+    complete: () => {
+      uni.hideLoading();
+    }
+  });
+};
+
+// 从服务器获取咖啡店信息
+const fetchShopInfo = (id) => {
+  uni.request({
+    url: `${baseUrl}/coffee-shops/${id}`,
+    method: 'GET',
+    success: (res) => {
+      if(res.statusCode === 200 && res.data.success) {
+        shopName.value = res.data.data.name;
+      }
+    }
+  });
+};
+
+// 格式化日期
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+};
+
 onMounted(() => {
   // 获取页面参数
-  const query = uni.$route ? uni.$route.query : uni.getEnterOptionsSync().query;
-  const shopId = query.shopId;
+  const pages = getCurrentPages();
+  const currentPage = pages[pages.length - 1];
   
-  // 从全局数据获取评价数据
-  const app = getApp();
-  if (app.globalData && app.globalData.tempData) {
-    shopName.value = app.globalData.tempData.shopName || '';
-    reviews.value = app.globalData.tempData.reviews || [];
-  } else {
-    // 如果没有数据，可以根据shopId从服务器获取
-    console.log('从服务器获取评价数据，shopId:', shopId);
-    // 这里可以添加从服务器获取数据的逻辑
+  if (currentPage && currentPage.options) {
+    shopId.value = currentPage.options.shopId || '';
+    
+    if (shopId.value) {
+      // 获取咖啡店信息和评价
+      fetchShopInfo(shopId.value);
+      fetchReviews(shopId.value);
+    } else {
+      uni.showToast({
+        title: '参数错误',
+        icon: 'none'
+      });
+    }
   }
 });
 </script>

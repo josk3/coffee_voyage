@@ -71,12 +71,31 @@ const coffeeShopStore = useCoffeeShopStore();
 const error = ref(null);
 
 coffeeShopStore.fetchCoffeeShopList();
-console.log("coffeeShopStore.list", coffeeShopStore.list);
 
 function handleShopClick(item) {
-  uni.navigateTo({
-    url: `/pages/coffee-shop/detail?id=${item.id}`,
-  });
+  if (item && item._id) {
+    console.log('点击咖啡店项目:', item.name, '- ID:', item._id);
+    
+    // 先跳转到详情页，而不是等待数据加载
+    uni.navigateTo({
+      url: `/pages/review/detail?id=${item._id}`,
+    });
+    
+    // 在后台预加载数据
+    coffeeShopStore.fetchCoffeeShopDetail(item._id)
+      .then(data => {
+        console.log('预加载咖啡店详情成功:', data ? data.name : 'undefined');
+      })
+      .catch(err => {
+        console.error('预加载咖啡店详情失败:', err);
+        // 不显示错误提示，因为用户已经跳转到了详情页
+      });
+  } else {
+    uni.showToast({
+      title: '商店信息不完整',
+      icon: 'none'
+    });
+  }
 }
 
 function onPullDownRefresh() {
