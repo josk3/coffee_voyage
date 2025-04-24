@@ -65,28 +65,34 @@
   </view>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue';
 import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
-export default {
-  name: 'CoffeeShopList',
-  setup() {
-    const coffeeShopStore = useCoffeeShopStore();
-    coffeeShopStore.fetchCoffeeShopList();
-    return {
-      coffeeShops: coffeeShopStore.list,
-      loading: false,
-      error: null
-    };
-  },
-  methods: {
-    handleShopClick(item) {
-      uni.navigateTo({
-        url: `/pages/coffee-shop/detail?id=${item.id}`
-      });
-    }
-  }
-};
+const coffeeShopStore = useCoffeeShopStore();
+const loading = ref(true);
+const error = ref(null);
+
+coffeeShopStore.fetchCoffeeShopList();
+console.log('coffeeShopStore.list', coffeeShopStore.list);
+
+function handleShopClick(item) {
+  uni.navigateTo({
+    url: `/pages/coffee-shop/detail?id=${item.id}`
+  });
+}
+
+function onPullDownRefresh() {
+  loading.value = true;
+  error.value = null;
+  coffeeShopStore.fetchCoffeeShopList();
+}
+
+const coffeeShops = ref(coffeeShopStore.list);
+
+watch(() => coffeeShopStore.list, (newList) => {
+  coffeeShops.value = newList;
+});
 </script>
 
 <style lang="scss" scoped>
