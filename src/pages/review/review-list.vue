@@ -73,10 +73,14 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
 const shopName = ref('');
 const reviews = ref([]);
 const shopId = ref('');
+
+// 从store获取数据
+const coffeeShopStore = useCoffeeShopStore();
 
 // API基础URL
 const baseUrl = 'http://localhost:3000/api';
@@ -100,60 +104,62 @@ const previewImage = (images, current) => {
 
 // 从服务器获取评价数据
 const fetchReviews = (id) => {
+  // 如果store中已有数据，直接使用
+  if (coffeeShopStore.reviews && coffeeShopStore.reviews.length > 0) {
+    reviews.value = coffeeShopStore.reviews;
+    return Promise.resolve(coffeeShopStore.reviews);
+  }
+  
+  // 否则请求新数据
   uni.showLoading({
     title: '加载中...'
   });
   
-  uni.request({
-    url: `${baseUrl}/coffee-shops/${id}/reviews`,
-    method: 'GET',
-    success: (res) => {
-      if(res.statusCode === 200 && res.data.success) {
-        reviews.value = res.data.data.map(item => ({
-          name: item.userName || '匿名用户',
-          avatar: item.userAvatar,
-          rating: item.rating,
-          date: formatDate(item.createdAt),
-          text: item.content,
-          images: item.images || []
-        }));
-      } else {
-        uni.showToast({
-          title: res.data.message || '获取评价失败',
-          icon: 'none'
-        });
-      }
-    },
-    fail: (err) => {
-      console.error('获取评价失败:', err);
+  return coffeeShopStore.fetchShopReviews(id)
+    .then(data => {
+      reviews.value = data;
+      return data;
+    })
+    .catch(err => {
       uni.showToast({
-        title: '网络错误，请稍后重试',
+        title: '获取评价失败',
         icon: 'none'
       });
-    },
-    complete: () => {
+      console.error('获取评价失败:', err);
+      throw err;
+    })
+    .finally(() => {
       uni.hideLoading();
-    }
-  });
+    });
 };
 
 // 从服务器获取咖啡店信息
 const fetchShopInfo = (id) => {
-  uni.request({
-    url: `${baseUrl}/coffee-shops/${id}`,
-    method: 'GET',
-    success: (res) => {
-      if(res.statusCode === 200 && res.data.success) {
-        shopName.value = res.data.data.name;
+  // 如果store中已有详情数据，直接使用
+  if (coffeeShopStore.detail) {
+    shopName.value = coffeeShopStore.detail.name;
+    return Promise.resolve(coffeeShopStore.detail);
+  }
+  
+  // 否则请求新数据
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${baseUrl}/coffee-shops/${id}`,
+      method: 'GET',
+      success: (res) => {
+        if(res.statusCode === 200 && res.data.success) {
+          shopName.value = res.data.data.name;
+          resolve(res.data.data);
+        } else {
+          reject(new Error(res.data.message || '获取商店信息失败'));
+        }
+      },
+      fail: (err) => {
+        console.error('获取商店信息失败:', err);
+        reject(err);
       }
-    }
+    });
   });
-};
-
-// 格式化日期
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 };
 
 onMounted(() => {
@@ -166,8 +172,13 @@ onMounted(() => {
     
     if (shopId.value) {
       // 获取咖啡店信息和评价
-      fetchShopInfo(shopId.value);
-      fetchReviews(shopId.value);
+      Promise.all([
+        fetchShopInfo(shopId.value),
+        fetchReviews(shopId.value)
+      ])
+      .catch(err => {
+        console.error('初始化数据失败:', err);
+      });
     } else {
       uni.showToast({
         title: '参数错误',

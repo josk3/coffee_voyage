@@ -212,10 +212,61 @@ const handleImageClick = (index) => {
 
 // 查看全部评价
 const viewAllReviews = () => {
-  // 跳转到评价列表页
-  uni.navigateTo({
-    url: `/pages/review/review-list?shopId=${shopDetail.value.id}`
+  // 显示加载提示
+  uni.showLoading({
+    title: '加载中...'
   });
+  
+  // 使用store获取评价数据
+  const shopId = shopDetail.value.id;
+  console.log('查看全部评价的咖啡店ID:', shopDetail.value);
+  
+  if (!shopId) {
+    uni.hideLoading();
+    uni.showToast({
+      title: '商店ID不存在',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  // 添加错误处理和超时处理
+  const requestTimeout = setTimeout(() => {
+    uni.hideLoading();
+    console.warn('获取评价请求超时');
+    // 超时时也跳转，避免用户等待
+    uni.navigateTo({
+      url: `/pages/review/review-list?shopId=${shopId}`
+    });
+  }, 5000); // 5秒超时
+  
+  // 调用store方法获取评价
+  coffeeShopStore.fetchShopReviews(shopId)
+    .then(reviews => {
+      // 清除超时
+      clearTimeout(requestTimeout);
+      
+      // 评价加载成功，跳转到评价列表页
+      uni.hideLoading();
+      console.log('获取到评价数据，准备跳转:', reviews && reviews.length);
+      
+      uni.navigateTo({
+        url: `/pages/review/review-list?shopId=${shopId}`
+      });
+    })
+    .catch(err => {
+      // 清除超时
+      clearTimeout(requestTimeout);
+      
+      // 即使出错也跳转，依靠review-list页面的错误处理
+      uni.hideLoading();
+      console.error('获取评价列表失败:', err);
+      
+      // 即使失败也跳转
+      uni.navigateTo({
+        url: `/pages/review/review-list?shopId=${shopId}`
+      });
+    });
 };
 
 // 查看用户资料

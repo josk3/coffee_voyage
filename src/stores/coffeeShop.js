@@ -15,6 +15,9 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     setCoffeeShopDetail(coffeeShopDetail) {
       this.detail = coffeeShopDetail;
     },
+    setShopReviews(reviews) {
+      this.reviews = reviews;
+    },
     async fetchCoffeeShopList() {
       try {
         uni.request({
@@ -66,6 +69,57 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           }
         });
       });
+    },
+    async fetchShopReviews(shopId) {
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews`,
+          method: 'GET',
+          success: (res) => {
+            console.log('获取评价响应数据:', JSON.stringify(res.data));
+            
+            // 修改判断逻辑，只要状态码为200就认为成功
+            if (res.statusCode === 200) {
+              // 检查返回的数据是否有效
+              if (res.data && (res.data.data || Array.isArray(res.data))) {
+                // 如果是标准格式，使用data字段
+                const reviewsData = Array.isArray(res.data) ? res.data : 
+                                   (Array.isArray(res.data.data) ? res.data.data : []);
+                
+                // 格式化评价数据
+                const formattedReviews = reviewsData.map(item => ({
+                  id: item._id || item.id,
+                  name: item.userName || item.name || '匿名用户',
+                  avatar: item.userAvatar || item.avatar,
+                  rating: item.rating || 5,
+                  date: this.formatDate(item.createdAt || item.date),
+                  text: item.content || item.text,
+                  images: item.images || []
+                }));
+                
+                this.setShopReviews(formattedReviews);
+                resolve(formattedReviews);
+              } else {
+                console.warn('评价数据格式不符合预期:', res.data);
+                this.setShopReviews([]);
+                resolve([]);
+              }
+            } else {
+              console.error('API响应状态码异常:', res.statusCode, res.data);
+              reject(new Error('获取评价失败: ' + (res.data.message || '未知错误')));
+            }
+          },
+          fail: (err) => {
+            console.error('请求评价失败:', err);
+            reject(err);
+          }
+        });
+      });
+    },
+    // 工具方法：格式化日期
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     }
   }
 }); 
