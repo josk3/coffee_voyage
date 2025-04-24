@@ -131,36 +131,25 @@ const shopDetail = ref({
 // 从store中获取数据
 const coffeeShopStore = useCoffeeShopStore();
 
-// 推荐菜数据 (暂时保留静态数据，API未提供推荐菜接口)
-const recommendItems = ref([
-  {
-    id: 1,
-    name: '小黄油拿铁',
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    price: 25
-  },
-  {
-    id: 2,
-    name: '太妃榛香拿铁',
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    price: 28
-  },
-  {
-    id: 3,
-    name: '费尔岛拿铁',
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    price: 30
-  },
-  {
-    id: 4,
-    name: '西梅拿铁',
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    price: 26
-  }
-]);
+// 推荐菜数据，从store中获取并限制显示数量
+const recommendItems = computed(() => {
+  // 只显示最多6个推荐菜
+  return coffeeShopStore.recommendItems.slice(0, 6);
+});
 
 // API基础URL
 const baseUrl = 'http://localhost:3000/api';
+
+// 获取推荐菜单
+const fetchRecommendItems = () => {
+  coffeeShopStore.fetchRecommendItems()
+    .then(() => {
+      console.log('推荐菜单加载成功');
+    })
+    .catch(err => {
+      console.error('获取推荐菜单失败:', err);
+    });
+};
 
 // 获取咖啡店详情数据
 const fetchShopDetail = (shopId) => {
@@ -179,7 +168,6 @@ const fetchShopDetail = (shopId) => {
   
   coffeeShopStore.fetchCoffeeShopDetail(shopId)
     .then(data => {
-      console.log('获取到的咖啡店详情:', JSON.stringify(data));
       shopDetail.value = data;
     })
     .catch(err => {
@@ -234,6 +222,8 @@ onMounted(() => {
   
   if (shopId) {
     fetchShopDetail(shopId);
+    // 获取推荐菜单数据
+    fetchRecommendItems();
   } else {
     uni.showToast({
       title: '参数错误',
@@ -246,6 +236,8 @@ onMounted(() => {
     console.log('收到刷新事件:', data);
     if (data && data.shopId) {
       fetchData(data.shopId);
+      // 刷新推荐菜单
+      fetchRecommendItems();
     }
   });
 });

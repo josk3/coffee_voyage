@@ -30,6 +30,8 @@
 | page | Number | 否 | 当前页码 | 1 |
 | limit | Number | 否 | 每页数量 | 10 |
 
+reviewer中的数据来自于咖啡店的第一条评论。若咖啡店没有评论，则reviewer字段可能不存在。
+
 **响应数据**:
 ```json
 {
@@ -96,6 +98,7 @@
     "description": "",
     "reviews": [
       {
+        "id": "61d5ec9af682fbd12a0041d1",
         "name": "用户8",
         "avatar": "https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp",
         "rating": 5,
@@ -106,6 +109,7 @@
         ]
       },
       {
+        "id": "61d5ec9af682fbd12a0041d2",
         "name": "用户9",
         "avatar": "https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp",
         "rating": 3.5,
@@ -114,6 +118,7 @@
         "images": []
       },
       {
+        "id": "61d5ec9af682fbd12a0041d3",
         "name": "匿名用户",
         "avatar": "https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp",
         "rating": 3.5,
@@ -240,6 +245,74 @@
   }
 }
 ```
+
+### 6. 获取推荐菜单
+
+获取推荐的咖啡和饮品列表。
+
+- **URL**: `/recommended-items`
+- **方法**: `GET`
+- **权限**: 公开
+
+**响应数据**:
+```json
+{
+  "success": true,
+  "message": "获取成功",
+  "data": [
+    {
+      "id": 1,
+      "name": "冰吸生椰拿铁",
+      "price": 32,
+      "image": "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg",
+      "canUpload": true,
+      "points": 20
+    },
+    {
+      "id": 2,
+      "name": "陨石拿铁",
+      "price": 32,
+      "image": "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg",
+      "canUpload": true,
+      "points": 20
+    },
+    {
+      "id": 3,
+      "name": "生椰丝绒拿铁",
+      "price": 35,
+      "image": "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg",
+      "canUpload": false
+    },
+    {
+      "id": 4,
+      "name": "冰镇杨梅瑞纳冰",
+      "price": 38,
+      "image": "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg",
+      "canUpload": true,
+      "points": 20
+    },
+    {
+      "id": 5,
+      "name": "小黄油拿铁",
+      "price": 25,
+      "image": "https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg",
+      "canUpload": false
+    }
+    // 更多推荐菜品...
+  ]
+}
+```
+
+**字段说明**:
+
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+| id | Number | 菜品ID |
+| name | String | 菜品名称 |
+| price | Number | 价格(元) |
+| image | String | 菜品图片URL |
+| canUpload | Boolean | 是否可以上传评价 |
+| points | Number | 可获得积分(仅当canUpload为true时有效) |
 
 ## 错误码说明
 

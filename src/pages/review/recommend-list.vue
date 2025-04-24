@@ -24,12 +24,6 @@
         <!-- 图片区域 -->
         <view class="item-image-container">
           <image :src="item.image" mode="aspectFill" class="item-image"></image>
-          
-          <!-- 上传图片提示 -->
-          <view class="upload-hint" v-if="item.canUpload" @click.stop="uploadImage(item)">
-            <view class="upload-icon">📷</view>
-            <view class="upload-text">传首图赢{{ item.points }}积分 ></view>
-          </view>
         </view>
         
         <!-- 商品信息 -->
@@ -44,85 +38,23 @@
         </view>
       </view>
     </view>
-    
-    <!-- 促销信息 -->
-    <view class="promotion-bar" @click="viewPromotion">
-      <view class="promotion-tag">团</view>
-      <view class="promotion-text">10.9元【瑞】特惠丨爆款甄选12选1</view>
-    </view>
   </view>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useCoffeeShopStore } from '@/stores/coffeeShop';
+
+// 获取store
+const coffeeShopStore = useCoffeeShopStore();
 
 // 推荐菜总数
 const totalCount = computed(() => {
-  return recommendItems.value.length;
+  return coffeeShopStore.recommendItems.length;
 });
 
-// 推荐菜数据
-const recommendItems = ref([
-  {
-    id: 1,
-    name: '冰吸生椰拿铁',
-    price: 32,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: true,
-    points: 20
-  },
-  {
-    id: 2,
-    name: '陨石拿铁',
-    price: 32,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: true,
-    points: 20
-  },
-  {
-    id: 3,
-    name: '生椰丝绒拿铁',
-    price: 35,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: false
-  },
-  {
-    id: 4,
-    name: '冰镇杨梅瑞纳冰',
-    price: 38,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: true,
-    points: 20
-  },
-  {
-    id: 5,
-    name: '小黄油拿铁',
-    price: 25,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: false
-  },
-  {
-    id: 6,
-    name: '太妃榛香拿铁',
-    price: 28,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: false
-  },
-  {
-    id: 7,
-    name: '费尔岛拿铁',
-    price: 30,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: false
-  },
-  {
-    id: 8,
-    name: '西梅拿铁',
-    price: 26,
-    image: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    canUpload: false
-  }
-]);
+// 推荐菜数据，直接从store获取
+const recommendItems = computed(() => coffeeShopStore.recommendItems);
 
 // 查看商品详情
 const viewItemDetail = (item) => {
@@ -136,42 +68,6 @@ const viewItemDetail = (item) => {
   // uni.navigateTo({
   //   url: `/pages/product/detail?id=${item.id}`
   // });
-};
-
-// 上传图片
-const uploadImage = (item) => {
-  console.log('上传图片:', item.name);
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: (res) => {
-      console.log('选择的图片:', res.tempFilePaths[0]);
-      uni.showToast({
-        title: '上传成功，积分已入账',
-        icon: 'success'
-      });
-      
-      // 实际逻辑：上传图片到服务器
-      // const uploadTask = uni.uploadFile({
-      //   url: 'https://api.example.com/upload',
-      //   filePath: res.tempFilePaths[0],
-      //   name: 'file',
-      //   formData: {
-      //     'productId': item.id
-      //   },
-      //   success: (res) => {
-      //     const data = JSON.parse(res.data);
-      //     if (data.success) {
-      //       uni.showToast({
-      //         title: '上传成功，积分已入账',
-      //         icon: 'success'
-      //       });
-      //     }
-      //   }
-      // });
-    }
-  });
 };
 
 // 添加到购物车
@@ -210,37 +106,34 @@ const handleSearch = () => {
   });
 };
 
-// 查看促销活动
-const viewPromotion = () => {
-  console.log('查看促销活动');
-  uni.showToast({
-    title: '查看促销活动详情',
-    icon: 'none'
-  });
-};
-
 onMounted(() => {
   // 获取页面参数
   const query = uni.$route ? uni.$route.query : uni.getEnterOptionsSync().query;
   
   // 获取推荐菜列表数据
-  // 这里可以添加从服务器获取数据的逻辑
-  // getRecommendItems(query.shopId);
+  getRecommendItems();
 });
 
-// 从后端获取推荐菜列表数据
-const getRecommendItems = (shopId) => {
-  // 实际逻辑：从后端获取推荐菜列表
-  // uni.request({
-  //   url: `https://api.example.com/shop/${shopId}/recommends`,
-  //   method: 'GET',
-  //   success: (res) => {
-  //     if (res.data.success) {
-  //       recommendItems.value = res.data.items;
-  //       totalCount.value = res.data.total;
-  //     }
-  //   }
-  // });
+// 从store获取推荐菜列表数据
+const getRecommendItems = () => {
+  uni.showLoading({
+    title: '加载中...'
+  });
+  
+  coffeeShopStore.fetchRecommendItems()
+    .then(() => {
+      console.log('推荐菜单加载成功');
+    })
+    .catch(err => {
+      console.error('获取推荐菜单失败:', err);
+      uni.showToast({
+        title: '获取推荐菜单失败',
+        icon: 'none'
+      });
+    })
+    .finally(() => {
+      uni.hideLoading();
+    });
 };
 </script>
 
@@ -248,7 +141,7 @@ const getRecommendItems = (shopId) => {
 .recommend-list-container {
   min-height: 100vh;
   background-color: #f8f8f8;
-  padding-bottom: 100rpx;
+  padding-bottom: 30rpx;
 }
 
 .page-header {
@@ -322,23 +215,6 @@ const getRecommendItems = (shopId) => {
       height: 100%;
       border-radius: 6rpx;
     }
-    
-    .upload-hint {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      color: #fff;
-      padding: 6rpx 10rpx;
-      font-size: 22rpx;
-      display: flex;
-      align-items: center;
-      
-      .upload-icon {
-        margin-right: 6rpx;
-      }
-    }
   }
   
   .item-info {
@@ -374,38 +250,6 @@ const getRecommendItems = (shopId) => {
       font-size: 40rpx;
       color: #666;
     }
-  }
-}
-
-.promotion-bar {
-  position: fixed;
-  bottom: 20rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fff;
-  border-radius: 30rpx;
-  padding: 15rpx 30rpx;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
-  
-  .promotion-tag {
-    width: 40rpx;
-    height: 40rpx;
-    background-color: #ff6f00;
-    color: #fff;
-    font-size: 24rpx;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 6rpx;
-    margin-right: 10rpx;
-  }
-  
-  .promotion-text {
-    font-size: 28rpx;
-    color: #333;
   }
 }
 </style> 

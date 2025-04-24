@@ -5,7 +5,8 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
   state: () => ({
     list: [],
     detail: null,
-    reviews: []
+    reviews: [],
+    recommendItems: []
   }),
   actions: {
     setCoffeeShopList(coffeeShops) {
@@ -18,6 +19,9 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     setShopReviews(reviews) {
       this.reviews = reviews;
     },
+    setRecommendItems(items) {
+      this.recommendItems = items;
+    },
     async fetchCoffeeShopList() {
       try {
         return new Promise((resolve, reject) => {
@@ -27,7 +31,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
             success: (res) => {
               if (res.statusCode === 200) {
                 // 检查返回数据格式
-                if (res.data && res.data.data && Array.isArray(res.data.data.items)) {
+                if (res.data && res.data.code === 0 && res.data.data && Array.isArray(res.data.data.items)) {
                   // 符合新API格式的响应
                   this.setCoffeeShopList(res.data.data.items);
                   resolve(res.data.data.items);
@@ -62,21 +66,36 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: `http://localhost:3000/api/coffee-shops/${id}`,
           method: 'GET',
           success: (res) => {
-            
-            // 无论响应如何，都将数据存储并返回
-            if (res.statusCode === 200) {
-              // 检查data是否存在且是有效数据
-              if (res.data && res.data.data) {
+            if (res.statusCode === 200 && res.data && res.data.code === 0) {
+              // API返回正确格式的数据
+              const shopData = res.data.data;
+              
+              // 格式化评价
+              if (shopData.reviews) {
+                shopData.reviews = shopData.reviews.map(review => ({
+                  id: review.id,
+                  name: review.name,
+                  avatar: review.avatar,
+                  rating: review.rating,
+                  date: review.date,
+                  text: review.text,
+                  images: review.images || []
+                }));
+              }
+              
+              this.setCoffeeShopDetail(shopData);
+              resolve(shopData);
+            } else {
+              console.warn('API返回数据格式不符合预期:', res.data);
+              // 如果状态码是200但没有错误信息，直接尝试使用返回的数据
+              if (res.statusCode === 200 && res.data && res.data.data) {
                 this.setCoffeeShopDetail(res.data.data);
                 resolve(res.data.data);
-              } else {
-                console.warn('API返回数据格式不符合预期:', res.data);
-                // 尝试使用整个响应作为数据
-                this.setCoffeeShopDetail(res.data);
-                resolve(res.data);
+                return;
               }
-            } else {
-              reject(new Error('获取详情失败: ' + (res.data.message || '未知错误')));
+              
+              const errorMsg = (res.data && res.data.message) ? res.data.message : '获取详情失败';
+              reject(new Error(errorMsg));
             }
           },
           fail: (err) => {
@@ -92,27 +111,23 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews`,
           method: 'GET',
           success: (res) => {
-            // 修改判断逻辑，只要状态码为200就认为成功
             if (res.statusCode === 200) {
-              // 检查返回的数据是否有效
-              if (res.data && (res.data.data || Array.isArray(res.data))) {
-                // 如果是标准格式，使用data字段
-                const reviewsData = Array.isArray(res.data) ? res.data : 
-                                   (Array.isArray(res.data.data) ? res.data.data : []);
+              // 检查返回的数据是否有效，按照API实际格式，使用code === 0表示成功
+              if (res.data && res.data.code === 0 && res.data.data) {
+                const reviewsData = res.data.data;
                 
-                // 格式化评价数据
+                // 格式化评价数据，使字段名称与UI组件一致
                 const formattedReviews = reviewsData.map(item => ({
                   id: item._id || item.id,
-                  name: item.userName || item.name || '匿名用户',
-                  avatar: item.userAvatar || item.avatar,
+                  name: item.userName || '匿名用户',
+                  avatar: item.userAvatar,
                   rating: item.rating || 5,
-                  date: this.formatDate(item.createdAt || item.date),
-                  text: item.content || item.text,
+                  date: this.formatDate(item.createdAt),
+                  text: item.content,
                   images: item.images || []
                 }));
 
                 console.log('评价数据:', formattedReviews);
-                
                 
                 this.setShopReviews(formattedReviews);
                 resolve(formattedReviews);
@@ -122,7 +137,14 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
                 resolve([]);
               }
             } else {
-              reject(new Error('获取评价失败: ' + (res.data.message || '未知错误')));
+              // 尽管API返回了错误状态码，我们仍然可以成功解析
+              console.warn('获取评价返回非200状态码:', res.statusCode);
+              if (res.data && res.data.message) {
+                console.warn('API返回消息:', res.data.message);
+              }
+              // 返回空数组而不是拒绝Promise
+              this.setShopReviews([]);
+              resolve([]);
             }
           },
           fail: (err) => {
@@ -149,7 +171,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews/${reviewId}`,
           method: 'DELETE',
           success: (res) => {
-            if (res.statusCode === 200) {
+            if (res.statusCode === 200 && res.data && res.data.code === 0) {
               // 从store中删除评论
               this.removeReviewFromStore(reviewId);
               
@@ -225,6 +247,30 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     formatDate(dateString) {
       const date = new Date(dateString);
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    },
+    
+    // 获取推荐菜单
+    async fetchRecommendItems() {
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: 'http://localhost:3000/api/recommended-items',
+          method: 'GET',
+          success: (res) => {
+            if (res.statusCode === 200 && res.data && res.data.code === 0) {
+              console.log('获取推荐菜单成功:', res.data.data);
+              this.setRecommendItems(res.data.data);
+              resolve(res.data.data);
+            } else {
+              console.error('获取推荐菜单失败:', res.data);
+              reject(new Error('获取推荐菜单失败: ' + (res.data.message || '未知错误')));
+            }
+          },
+          fail: (err) => {
+            console.error('请求推荐菜单接口失败:', err);
+            reject(err);
+          }
+        });
+      });
     }
   }
 }); 
