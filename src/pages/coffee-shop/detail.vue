@@ -21,7 +21,7 @@
             :class="n <= Math.floor(coffeeShop.detail.rating) ? 'filled' : (n - 0.5 <= coffeeShop.detail.rating ? 'half' : '')"
           >★</text>
         </view>
-        <text class="rating">{{ coffeeShop.detail.rating }}</text>
+        <text class="rating">{{ coffeeShop.detail.rating.toFixed(1) }}</text>
         <text class="review-count">{{ coffeeShop.detail.reviewCount }}条评价</text>
       </view>
       

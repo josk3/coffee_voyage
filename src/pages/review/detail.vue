@@ -21,7 +21,7 @@
             :class="n <= Math.floor(shopDetail.rating) ? 'filled' : (n - 0.5 <= shopDetail.rating ? 'half' : '')"
           >★</text>
         </view>
-        <text class="rating">{{ shopDetail.rating }}</text>
+        <text class="rating">{{ shopDetail.rating.toFixed(1) }}</text>
         <text class="review-count" @click="viewAllReviews">{{ shopDetail.reviewCount }}条评价 ></text>
         <text class="price">¥{{ shopDetail.price }}/人</text>
       </view>

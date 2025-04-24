@@ -20,22 +20,42 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     },
     async fetchCoffeeShopList() {
       try {
-        uni.request({
-          url: 'http://localhost:3000/api/coffee-shops',
-          method: 'GET',
-          success: (res) => {
-            if (res.statusCode === 200) {
-              this.setCoffeeShopList(res.data.data.items);
-            } else {
-              throw new Error('Failed to fetch coffee shops');
+        return new Promise((resolve, reject) => {
+          uni.request({
+            url: 'http://localhost:3000/api/coffee-shops',
+            method: 'GET',
+            success: (res) => {
+              console.log('咖啡店列表响应数据:', JSON.stringify(res.data));
+              
+              if (res.statusCode === 200) {
+                // 检查返回数据格式
+                if (res.data && res.data.data && Array.isArray(res.data.data.items)) {
+                  // 符合新API格式的响应
+                  this.setCoffeeShopList(res.data.data.items);
+                  resolve(res.data.data.items);
+                } else if (res.data && Array.isArray(res.data)) {
+                  // 旧格式响应 - 直接是数组
+                  this.setCoffeeShopList(res.data);
+                  resolve(res.data);
+                } else {
+                  console.warn('咖啡店列表数据格式不符合预期:', res.data);
+                  this.setCoffeeShopList([]);
+                  resolve([]);
+                }
+              } else {
+                console.error('获取咖啡店列表失败:', res.data);
+                reject(new Error('获取咖啡店列表失败:' + (res.data.message || '未知错误')));
+              }
+            },
+            fail: (err) => {
+              console.error('请求咖啡店列表失败:', err);
+              reject(err);
             }
-          },
-          fail: (err) => {
-            console.error(err);
-          }
+          });
         });
       } catch (error) {
-        console.error(error);
+        console.error('咖啡店列表请求异常:', error);
+        return Promise.reject(error);
       }
     },
     async fetchCoffeeShopDetail(id) {

@@ -35,21 +35,21 @@
                 "
                 >★</text
               > </view
-            ><text class="rating">{{ item.rating }}</text
+            ><text class="rating">{{ item.rating.toFixed(1) }}</text
             ><text class="review-count">{{ item.reviewCount }}条</text
             ><text class="price">¥{{ item.price }}/人</text>
           </view>
 
           <!-- 评价内容 -->
-          <view class="review-content" v-if="item.latestReview">
+          <view class="review-content" v-if="item.reviewer">
             <!-- 用户头像 -->
             <image
-              :src="item.latestReview.user.avatar"
+              :src="item.reviewer.avatar"
               class="reviewer-avatar"
             ></image>
 
             <!-- 评价文字 -->
-            <text class="review-text">"{{ item.latestReview.content }}"</text>
+            <text class="review-text">"{{ item.reviewer.reviewText }}"</text>
           </view>
         </view>
       </view>
