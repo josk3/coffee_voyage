@@ -392,23 +392,29 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     },
     
     // 获取推荐菜单
-    async fetchRecommendItems() {
+    async fetchRecommendItems(shopId) {
+      // 如果没有提供shopId，则返回空数组
+      if (!shopId) {
+        console.warn('获取推荐菜单时未提供shopId');
+        return Promise.resolve([]);
+      }
+      
       return new Promise((resolve, reject) => {
         uni.request({
-          url: `${BASE_API_URL}/recommended-items`,
+          url: `${BASE_API_URL}/coffee-shops/${shopId}/recommended-dishes`,
           method: 'GET',
           success: (res) => {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
-              console.log('获取推荐菜单成功:', res.data.data);
+              console.log(`获取咖啡店(${shopId})推荐菜单成功:`, res.data.data);
               this.setRecommendItems(res.data.data);
               resolve(res.data.data);
             } else {
-              console.error('获取推荐菜单失败:', res.data);
+              console.error(`获取咖啡店(${shopId})推荐菜单失败:`, res.data);
               reject(new Error('获取推荐菜单失败: ' + (res.data.message || '未知错误')));
             }
           },
           fail: (err) => {
-            console.error('请求推荐菜单接口失败:', err);
+            console.error(`请求咖啡店(${shopId})推荐菜单接口失败:`, err);
             reject(err);
           }
         });
@@ -490,6 +496,59 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
               // 用户点击取消，不执行删除
               resolve(false);
             }
+          }
+        });
+      });
+    },
+    // 添加推荐菜
+    async addRecommendedDish(shopId, dishData) {
+      if (!shopId) {
+        return Promise.reject(new Error('缺少商店ID'));
+      }
+      
+      // 检查必填字段
+      if (!dishData.dishName) {
+        return Promise.reject(new Error('菜品名称不能为空'));
+      }
+      
+      if (!dishData.dishImage) {
+        return Promise.reject(new Error('菜品图片不能为空'));
+      }
+      
+      if (!dishData.price || dishData.price <= 0) {
+        return Promise.reject(new Error('菜品价格必须大于0'));
+      }
+      
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: `${this.baseApiUrl}/coffee-shops/${shopId}/recommended-dishes`,
+          method: 'POST',
+          data: dishData,
+          header: {
+            'Content-Type': 'application/json'
+          },
+          success: (res) => {
+            if (res.statusCode === 200 || res.statusCode === 201) {
+              console.log('添加推荐菜成功:', res.data);
+              
+              // 刷新推荐菜列表
+              this.fetchRecommendItems(shopId)
+                .then(() => {
+                  resolve(res.data);
+                })
+                .catch(() => {
+                  // 即使刷新列表失败，仍然认为添加成功
+                  resolve(res.data);
+                });
+            } else {
+              const errMsg = res.data && res.data.message ? res.data.message : '添加失败';
+              console.error('添加推荐菜失败:', res.data);
+              reject(new Error(errMsg));
+            }
+          },
+          fail: (err) => {
+            console.error('添加推荐菜请求失败:', err);
+            reject(new Error('网络请求失败'));
           }
         });
       });

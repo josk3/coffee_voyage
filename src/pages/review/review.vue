@@ -680,6 +680,7 @@ function handleDeleteItem(item, index) {
     .popup-body {
       flex: 1;
       padding: 30rpx;
+      box-sizing: border-box;
       max-height: calc(80vh - 100rpx);
     }
   }
@@ -726,7 +727,7 @@ function handleDeleteItem(item, index) {
   }
   
   .form-input {
-    width: 92%;
+    width: 100%;
     height: 80rpx;
     border: 1rpx solid #ddd;
     border-radius: 8rpx;
@@ -737,7 +738,7 @@ function handleDeleteItem(item, index) {
   }
   
   .form-textarea {
-    width: 92%;
+    width: 100%;
     height: 160rpx;
     border: 1rpx solid #ddd;
     border-radius: 8rpx;

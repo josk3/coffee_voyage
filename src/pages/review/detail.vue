@@ -138,13 +138,18 @@ const recommendItems = computed(() => {
 });
 
 // 获取推荐菜单
-const fetchRecommendItems = () => {
-  coffeeShopStore.fetchRecommendItems()
-    .then(() => {
-      console.log('推荐菜单加载成功');
+const fetchRecommendItems = (shopId) => {
+  if (!shopId) {
+    console.warn('获取推荐菜单时未提供shopId');
+    return;
+  }
+  
+  coffeeShopStore.fetchRecommendItems(shopId)
+    .then((data) => {
+      console.log(`咖啡店(${shopId})的推荐菜单加载成功:`, data);
     })
     .catch(err => {
-      console.error('获取推荐菜单失败:', err);
+      console.error(`获取咖啡店(${shopId})的推荐菜单失败:`, err);
     });
 };
 
@@ -220,7 +225,7 @@ onMounted(() => {
   if (shopId) {
     fetchShopDetail(shopId);
     // 获取推荐菜单数据
-    fetchRecommendItems();
+    fetchRecommendItems(shopId);
   } else {
     uni.showToast({
       title: '参数错误',
@@ -234,7 +239,7 @@ onMounted(() => {
     if (data && data.shopId) {
       fetchData(data.shopId);
       // 刷新推荐菜单
-      fetchRecommendItems();
+      fetchRecommendItems(data.shopId);
     }
   });
 });
