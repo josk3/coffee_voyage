@@ -88,12 +88,12 @@
               </view>
               
               <view class="form-item">
-                <text class="form-label">图片URL</text>
+                <text class="form-label">LOGO</text>
                 <input type="text" v-model="formData.logo" placeholder="请输入图片URL" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">评分</text>
+                <text class="fgporm-label">评分</text>
                 <input type="number" v-model="formData.rating" placeholder="评分(1-5)" class="form-input" />
               </view>
               
