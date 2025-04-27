@@ -118,7 +118,7 @@
                   @input="updateImageInputCount"
                 ></textarea>
                 <view class="form-tip-wrapper">
-                  <text class="form-tip">多个URL请用英文逗号(,)分隔</text>
+                  <text class="form-tip">多个图片请用英文逗号(,)分隔</text>
                   <text class="char-count">{{ imageInputCount }}/5000</text>
                 </view>
                 

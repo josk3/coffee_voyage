@@ -96,7 +96,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useCoffeeShopStore } from '@/stores/coffeeShop';
 
 // 引入uni-icons组件
-import uniIcons from '@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue';
+import uniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
 
 // 获取store
 const coffeeShopStore = useCoffeeShopStore();

@@ -83,12 +83,17 @@ import { useCoffeeShopStore } from '@/stores/coffeeShop';
 const shopName = ref('');
 const reviews = ref([]);
 const shopId = ref('');
+// 添加删除状态标记
+const isDeleting = ref(false);
 
 // 从store获取数据
 const coffeeShopStore = useCoffeeShopStore();
 
 // API基础URL
-const baseUrl = 'http://localhost:3000/api';
+const baseUrl = coffeeShopStore.baseApiUrl || 'http://localhost:3000/api';
+
+// 已经删除过的评价ID集合，避免重复删除
+const deletedReviewIds = ref(new Set());
 
 // 获取评分描述
 const getRatingLabel = (rating) => {
@@ -134,34 +139,85 @@ const deleteReview = (review, index) => {
     return;
   }
   
-  // 使用store中的方法删除评论
-  coffeeShopStore.deleteReview(shopId.value, reviewId)
-    .then(() => {
-      // 删除成功后从当前页面的列表中移除
-      reviews.value.splice(index, 1);
-    })
-    .catch(error => {
-      console.error('删除评价失败:', error);
-      // 错误处理已在store中完成，这里不需要额外处理
-    });
+  // 防止重复删除同一评价
+  if (deletedReviewIds.value.has(reviewId)) {
+    console.log('该评价已被删除，忽略重复操作');
+    return;
+  }
+  
+  // 防止删除操作中重复点击
+  if (isDeleting.value) {
+    console.log('正在处理删除操作，请稍候');
+    return;
+  }
+  
+  // 标记删除中状态
+  isDeleting.value = true;
+  
+  // 记录要删除的评价ID，防止重复删除
+  deletedReviewIds.value.add(reviewId);
+  
+  // 显示加载提示
+  uni.showLoading({
+    title: '删除中...',
+    mask: true
+  });
+  
+  // 直接发送删除请求，不通过store
+  uni.request({
+    url: `${baseUrl}/coffee-shops/${shopId.value}/reviews/${reviewId}`,
+    method: 'DELETE',
+    success: (res) => {
+      if (res.statusCode === 200 && res.data && res.data.code === 0) {
+        // 删除成功后，直接更新当前列表，不借助store
+        reviews.value = reviews.value.filter(item => {
+          const itemId = item._id || item.id;
+          return itemId !== reviewId;
+        });
+        
+        uni.showToast({
+          title: '删除成功',
+          icon: 'success'
+        });
+      } else {
+        const errMsg = (res.data && res.data.message) ? res.data.message : '删除失败';
+        uni.showToast({
+          title: errMsg,
+          icon: 'none'
+        });
+        
+        // 删除失败时，从已删除集合中移除该ID
+        deletedReviewIds.value.delete(reviewId);
+      }
+    },
+    fail: (err) => {
+      console.error('删除评价请求失败:', err);
+      uni.showToast({
+        title: '网络错误，请稍后重试',
+        icon: 'none'
+      });
+      
+      // 删除失败时，从已删除集合中移除该ID
+      deletedReviewIds.value.delete(reviewId);
+    },
+    complete: () => {
+      uni.hideLoading();
+      isDeleting.value = false;
+    }
+  });
 };
 
 // 从服务器获取评价数据
 const fetchReviews = (id) => {
-  // 如果store中已有数据，直接使用
-  if (coffeeShopStore.reviews && coffeeShopStore.reviews.length > 0) {
-    reviews.value = coffeeShopStore.reviews;
-    return Promise.resolve(coffeeShopStore.reviews);
-  }
-  
-  // 否则请求新数据
+  // 请求新数据
   uni.showLoading({
     title: '加载中...'
   });
   
   return coffeeShopStore.fetchShopReviews(id)
     .then(data => {
-      reviews.value = data;
+      // 创建一个全新的数组，完全断开与store的引用关系
+      reviews.value = JSON.parse(JSON.stringify(data));
       return data;
     })
     .catch(err => {
