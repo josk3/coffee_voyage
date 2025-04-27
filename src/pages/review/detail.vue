@@ -137,9 +137,6 @@ const recommendItems = computed(() => {
   return coffeeShopStore.recommendItems.slice(0, 6);
 });
 
-// API基础URL
-const baseUrl = 'http://localhost:3000/api';
-
 // 获取推荐菜单
 const fetchRecommendItems = () => {
   coffeeShopStore.fetchRecommendItems()

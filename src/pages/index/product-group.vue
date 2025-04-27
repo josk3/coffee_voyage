@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
-import { categoryAPI, courseAPI } from '@/api/index';
+// import { categoryAPI, courseAPI } from '@/api/index';
 
 // 响应式状态
 const categoryList = ref([]);
@@ -79,60 +79,166 @@ const scrollViewHeight = ref(0);
 const scrollIntoView = ref('');
 const categoryOffsets = ref({});
 
+// 占位数据
+const mockCategories = [
+  {
+    _id: '1',
+    id: '1',
+    name: '咖啡',
+    courses: [
+      {
+        id: '101',
+        name: '拿铁制作入门',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '王老师',
+        price: 0,
+        level: 0
+      },
+      {
+        id: '102',
+        name: '手冲咖啡技巧',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '李老师',
+        price: 39,
+        level: 1
+      },
+      {
+        id: '103',
+        name: '咖啡拉花艺术',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '张老师',
+        price: 59,
+        level: 2
+      }
+    ]
+  },
+  {
+    _id: '2',
+    id: '2',
+    name: '茶饮',
+    courses: [
+      {
+        id: '201',
+        name: '中国茶道基础',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '刘老师',
+        price: 0,
+        level: 0
+      },
+      {
+        id: '202',
+        name: '奶茶调制技巧',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '陈老师',
+        price: 29,
+        level: 1
+      }
+    ]
+  },
+  {
+    _id: '3',
+    id: '3',
+    name: '烘焙',
+    courses: [
+      {
+        id: '301',
+        name: '面包制作基础',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '周老师',
+        price: 49,
+        level: 0
+      },
+      {
+        id: '302',
+        name: '甜点装饰艺术',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '赵老师',
+        price: 69,
+        level: 1
+      },
+      {
+        id: '303',
+        name: '高级西点制作',
+        coverUrl: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+        teacherName: '钱老师',
+        price: 99,
+        level: 2
+      }
+    ]
+  }
+];
+
 // 加载分类数据
 async function fetchCategories() {
-  try {
-    const res = await categoryAPI.getAllCategories();
-    categoryList.value = res.data || [];
+  // try {
+  //   const res = await categoryAPI.getAllCategories();
+  //   categoryList.value = res.data || [];
     
-    // 获取每个分类的课程
-    if (categoryList.value.length > 0) {
-      await fetchCoursesForCategories();
+  //   // 获取每个分类的课程
+  //   if (categoryList.value.length > 0) {
+  //     await fetchCoursesForCategories();
       
-      // 初始化完成后计算分类偏移量
-      nextTick(() => {
-        calculateCategoryOffsets();
-        // 初始滚动到第一个分类
-        if (categoryList.value.length > 0) {
-          scrollIntoView.value = `category-${categoryList.value[0].id}`;
-        }
-      });
+  //     // 初始化完成后计算分类偏移量
+  //     nextTick(() => {
+  //       calculateCategoryOffsets();
+  //       // 初始滚动到第一个分类
+  //       if (categoryList.value.length > 0) {
+  //         scrollIntoView.value = `category-${categoryList.value[0].id}`;
+  //       }
+  //     });
+  //   }
+  //   console.log('categoryList.value', categoryList.value);
+  // } catch (error) {
+  //   console.error('获取分类出错:', error);
+  //   uni.showToast({
+  //     title: '获取分类失败',
+  //     icon: 'none'
+  //   });
+  // }
+  
+  // 使用占位数据
+  categoryList.value = mockCategories;
+  
+  // 初始化完成后计算分类偏移量
+  nextTick(() => {
+    calculateCategoryOffsets();
+    // 初始滚动到第一个分类
+    if (categoryList.value.length > 0) {
+      scrollIntoView.value = `category-${categoryList.value[0].id}`;
     }
-    console.log('categoryList.value', categoryList.value);
-  } catch (error) {
-    console.error('获取分类出错:', error);
-    uni.showToast({
-      title: '获取分类失败',
-      icon: 'none'
-    });
-  }
+  });
+  
+  console.log('使用占位数据:', categoryList.value);
 }
 
 // 获取所有分类的课程
 async function fetchCoursesForCategories() {
-  try {
-    console.log('开始获取分类课程');
-    const promises = categoryList.value.map(async (category) => {
-      try {
-        console.log(`获取分类 ${category.name} 的课程，ID: ${category.id || category._id}`);
-        const res = await courseAPI.getCategoryCourses(category._id, { limit: 20 });
-        console.log(`分类 ${category.name} 课程获取结果:`, res);
-        category.courses = res.data?.courses || [];
-      } catch (error) {
-        console.error(`获取分类 ${category.name} 课程出错:`, error);
-        category.courses = [];
-      }
-    });
+  // try {
+  //   console.log('开始获取分类课程');
+  //   const promises = categoryList.value.map(async (category) => {
+  //     try {
+  //       console.log(`获取分类 ${category.name} 的课程，ID: ${category.id || category._id}`);
+  //       const res = await courseAPI.getCategoryCourses(category._id, { limit: 20 });
+  //       console.log(`分类 ${category.name} 课程获取结果:`, res);
+  //       category.courses = res.data?.courses || [];
+  //     } catch (error) {
+  //       console.error(`获取分类 ${category.name} 课程出错:`, error);
+  //       category.courses = [];
+  //     }
+  //   });
     
-    await Promise.all(promises);
-    console.log('所有分类课程获取完成', categoryList.value);
-  } catch (error) {
-    console.error('获取课程总体出错:', error);
-    uni.showToast({
-      title: '获取课程失败',
-      icon: 'none'
-    });
-  }
+  //   await Promise.all(promises);
+  //   console.log('所有分类课程获取完成', categoryList.value);
+  // } catch (error) {
+  //   console.error('获取课程总体出错:', error);
+  //   uni.showToast({
+  //     title: '获取课程失败',
+  //     icon: 'none'
+  //   });
+  // }
+  
+  // 注: 不需要实现，因为已经在mockCategories中包含了courses数据
+  console.log('使用占位数据中的课程信息');
 }
 
 // 计算每个分类的滚动偏移量

@@ -214,6 +214,7 @@ const handlePublish = () => {
   // 获取用户信息
   const savedUserInfo = uni.getStorageSync('userInfo');
   if (!savedUserInfo || !savedUserInfo.nickName || !savedUserInfo.avatarUrl) {
+    
     uni.showModal({
       title: '提示',
       content: '需要提供用户信息才能发表评论',

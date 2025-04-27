@@ -3,5 +3,6 @@
   "projectname": "uniapp_app",
   "setting": {
     "compileHotReLoad": true
-  }
+  },
+  "libVersion": "3.8.1"
 }

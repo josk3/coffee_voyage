@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia';
 import { nextTick } from 'vue';
 
+// 基础API URL
+// const BASE_API_URL = ' http://rgmevy.natappfree.cc/api';
+const BASE_API_URL = 'http://localhost:3000/api';
+
 export const useCoffeeShopStore = defineStore('coffeeShop', {
   state: () => ({
     list: [],
     detail: null,
     reviews: [],
-    recommendItems: []
+    recommendItems: [],
+    baseApiUrl: BASE_API_URL // 将基础URL保存在state中，方便组件访问
   }),
   actions: {
     setCoffeeShopList(coffeeShops) {
@@ -26,7 +31,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
       try {
         return new Promise((resolve, reject) => {
           uni.request({
-            url: 'http://localhost:3000/api/coffee-shops',
+            url: `${BASE_API_URL}/coffee-shops`,
             method: 'GET',
             success: (res) => {
               if (res.statusCode === 200) {
@@ -63,7 +68,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     async fetchCoffeeShopDetail(id) {
       return new Promise((resolve, reject) => {
         uni.request({
-          url: `http://localhost:3000/api/coffee-shops/${id}`,
+          url: `${BASE_API_URL}/coffee-shops/${id}`,
           method: 'GET',
           success: (res) => {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
@@ -108,7 +113,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     async fetchShopReviews(shopId) {
       return new Promise((resolve, reject) => {
         uni.request({
-          url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews`,
+          url: `${BASE_API_URL}/coffee-shops/${shopId}/reviews`,
           method: 'GET',
           success: (res) => {
             if (res.statusCode === 200) {
@@ -168,7 +173,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
         });
         
         uni.request({
-          url: `http://localhost:3000/api/coffee-shops/${shopId}/reviews/${reviewId}`,
+          url: `${BASE_API_URL}/coffee-shops/${shopId}/reviews/${reviewId}`,
           method: 'DELETE',
           success: (res) => {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
@@ -253,7 +258,7 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     async fetchRecommendItems() {
       return new Promise((resolve, reject) => {
         uni.request({
-          url: 'http://localhost:3000/api/recommended-items',
+          url: `${BASE_API_URL}/recommended-items`,
           method: 'GET',
           success: (res) => {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
