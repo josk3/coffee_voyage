@@ -303,7 +303,7 @@ function handleSubmit() {
         shopImage: formData.value.logo,
         rating: parseFloat(formData.value.rating),
         averagePrice: parseFloat(formData.value.price),
-        images: formData.value.images
+        images: getImageURLs()
       };
       
       // 添加评论
@@ -448,8 +448,13 @@ watch(
 // 获取图片URL数组
 function getImageURLs() {
   if (!formData.value.images) return [];
-  return formData.value.images.split(',').map(url => url.trim()).filter(url => url);
+  if(formData.value.images.includes(',')) {
+    return formData.value.images.split(',').map(url => url.trim()).filter(url => url);
+  } else {
+    return [formData.value.images];
+  }
 }
+
 
 // 处理图片加载错误
 function handleImageError(index) {
