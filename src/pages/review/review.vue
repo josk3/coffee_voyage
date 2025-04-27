@@ -101,6 +101,11 @@
               <input type="number" v-model="formData.price" placeholder="人均价格" class="form-input" />
             </view>
             
+            <view class="form-item">
+              <text class="form-label">商品图片</text>
+              <input type="text" v-model="formData.images" placeholder="请输入商品图片URL，多个URL用英文逗号分隔" class="form-input" />
+            </view>
+
             <view class="form-section">
               <view class="section-title">示例评价</view>
               
@@ -184,7 +189,8 @@ const formData = ref({
   dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
   dishPrice: 0,
   dishRating: 5,
-  dishDescription: ''
+  dishDescription: '',
+  images: ''
 });
 
 // 显示管理弹窗
@@ -241,6 +247,12 @@ function handleSubmit() {
     commentCount: Number(formData.value.reviewCount || 0),
     averagePrice: Number(formData.value.price)
   };
+  
+  // 处理商品图片
+  if (formData.value.images) {
+    // 将逗号分隔的URL转换为数组
+    requestData.images = formData.value.images.split(',').map(url => url.trim()).filter(url => url);
+  }
   
   // 如果有初始评价信息，添加到comments数组
   const comments = [];
@@ -312,7 +324,8 @@ function handleSubmit() {
           dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
           dishPrice: 0,
           dishRating: 5,
-          dishDescription: ''
+          dishDescription: '',
+          images: ''
         };
         
         // 关闭弹窗
