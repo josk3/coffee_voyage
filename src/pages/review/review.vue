@@ -199,33 +199,146 @@ function hideAdminPopup() {
 
 // 提交表单
 function handleSubmit() {
-  console.log('提交表单数据:', formData.value);
+  console.log('开始提交表单...');
+  // 表单验证
+  if (!formData.value.name) {
+    uni.showToast({
+      title: '请输入店铺名称',
+      icon: 'none'
+    });
+    return;
+  }
   
-  // 这里先用占位处理
-  uni.showToast({
-    title: '提交成功',
-    icon: 'success'
-  });
+  if (!formData.value.logo) {
+    uni.showToast({
+      title: '请输入图片URL',
+      icon: 'none'
+    });
+    return;
+  }
   
-  // 重置表单
-  formData.value = {
-    name: '',
-    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    rating: 4.5,
-    reviewCount: 0,
-    price: 30,
-    reviewerName: '',
-    reviewerAvatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
-    reviewText: '',
-    dishName: '',
-    dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-    dishPrice: 0,
-    dishRating: 5,
-    dishDescription: ''
+  if (!formData.value.rating || formData.value.rating < 1 || formData.value.rating > 5) {
+    uni.showToast({
+      title: '请输入正确的评分(1-5)',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  if (!formData.value.price || formData.value.price <= 0) {
+    uni.showToast({
+      title: '请输入正确的人均价格',
+      icon: 'none'
+    });
+    return;
+  }
+  
+  // 构建请求数据
+  const requestData = {
+    shopName: formData.value.name.trim(),
+    shopImage: formData.value.logo.trim(),
+    rating: Number(formData.value.rating),
+    commentCount: Number(formData.value.reviewCount || 0),
+    averagePrice: Number(formData.value.price)
   };
   
-  // 关闭弹窗
-  hideAdminPopup();
+  // 如果有初始评价信息，添加到comments数组
+  const comments = [];
+  if (formData.value.reviewerName && formData.value.reviewText) {
+    comments.push({
+      userName: formData.value.reviewerName.trim(),
+      userAvatar: formData.value.reviewerAvatar.trim(),
+      content: formData.value.reviewText.trim()
+    });
+  }
+  
+  // 如果有推荐菜品信息，添加到recommendDishes数组
+  const recommendDishes = [];
+  if (formData.value.dishName && formData.value.dishImage) {
+    recommendDishes.push({
+      dishName: formData.value.dishName.trim(),
+      dishImage: formData.value.dishImage.trim(),
+      price: Number(formData.value.dishPrice || 0),
+      recommendIndex: Number(formData.value.dishRating || 5),
+      description: formData.value.dishDescription || ''
+    });
+  }
+  
+  // 补充完整的数据
+  requestData.comments = comments;
+  
+  // 只有在有完整推荐菜品数据时才添加到请求中
+  if (recommendDishes.length > 0 && formData.value.dishPrice > 0) {
+    requestData.recommendDishes = recommendDishes;
+  } else {
+    requestData.recommendDishes = []; // 空数组表示没有推荐菜品
+  }
+  
+  // 直接使用 store 的 createCoffeeShop 方法
+  let loadingShown = false;
+  try {
+    // 显示加载状态
+    uni.showLoading({
+      title: '提交中...'
+    });
+    loadingShown = true;
+    
+    // 调用 store 中的 createCoffeeShop 方法
+    coffeeShopStore.createCoffeeShop(requestData)
+      .then(res => {
+        // 关闭加载状态
+        if (loadingShown) {
+          uni.hideLoading();
+          loadingShown = false;
+        }
+        
+        // 提交成功
+        uni.showToast({
+          title: '创建成功',
+          icon: 'success'
+        });
+        
+        // 重置表单
+        formData.value = {
+          name: '',
+          logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+          rating: 4.5,
+          reviewCount: 0,
+          price: 30,
+          reviewerName: '',
+          reviewerAvatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
+          reviewText: '',
+          dishName: '',
+          dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+          dishPrice: 0,
+          dishRating: 5,
+          dishDescription: ''
+        };
+        
+        // 关闭弹窗
+        hideAdminPopup();
+      })
+      .catch(err => {
+        // 确保关闭加载状态
+        if (loadingShown) {
+          uni.hideLoading();
+          loadingShown = false;
+        }
+        
+        // 显示错误信息
+        uni.showToast({
+          title: err.message || '创建失败，请稍后重试',
+          icon: 'none'
+        });
+        console.error('创建咖啡店失败:', err);
+      });
+  } catch (error) {
+    // 确保关闭加载状态
+    if (loadingShown) {
+      uni.hideLoading();
+    }
+    console.error('创建咖啡店出错:', error);
+  }
 }
 
 coffeeShopStore.fetchCoffeeShopList();

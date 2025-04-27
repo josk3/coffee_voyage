@@ -27,6 +27,109 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     setRecommendItems(items) {
       this.recommendItems = items;
     },
+    
+    // 创建新咖啡店
+    createCoffeeShop(shopData) {
+      console.log('调用createCoffeeShop方法，数据:', shopData);
+      
+      // 检查必填字段
+      if (!shopData.shopName) {
+        return Promise.reject(new Error('店铺名称不能为空'));
+      }
+      
+      if (!shopData.shopImage) {
+        return Promise.reject(new Error('店铺图片不能为空'));
+      }
+      
+      if (!shopData.averagePrice) {
+        return Promise.reject(new Error('人均价格不能为空'));
+      }
+      
+      // 格式化数据以符合接口要求
+      const formattedData = {
+        data: {
+          shopInfo: {
+            shopName: shopData.shopName,
+            shopImage: shopData.shopImage,
+            rating: shopData.rating || 5,
+            commentCount: shopData.commentCount || 0,
+            averagePrice: shopData.averagePrice,
+            address: shopData.address || "",
+            businessHours: shopData.businessHours || ""
+          },
+          comments: Array.isArray(shopData.comments) ? shopData.comments.map(comment => ({
+            userName: comment.userName || "",
+            userAvatar: comment.userAvatar || "",
+            content: comment.content || ""
+          })) : [],
+          recommendDishes: Array.isArray(shopData.recommendDishes) ? shopData.recommendDishes.map(dish => ({
+            dishName: dish.dishName || "",       // 必填，菜品名称
+            dishImage: dish.dishImage || "",     // 必填，菜品图片
+            price: dish.price || 0,              // 必填，菜品价格
+            recommendIndex: dish.recommendIndex || 5, // 选填，推荐指数
+            description: dish.description || ""  // 选填，菜品描述
+          })) : []
+        }
+      };
+      
+      // 检查推荐菜品是否完整
+      if (formattedData.data.recommendDishes.length > 0) {
+        for (const dish of formattedData.data.recommendDishes) {
+          if (!dish.dishName) {
+            return Promise.reject(new Error("菜品名称不能为空"));
+          }
+          if (!dish.dishImage) {
+            return Promise.reject(new Error("菜品图片不能为空"));
+          }
+          if (!dish.price) {
+            return Promise.reject(new Error("菜品价格不能为空"));
+          }
+        }
+      }
+      
+      console.log('格式化后的咖啡店数据:', JSON.stringify(formattedData));
+      
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: `${BASE_API_URL}/coffee-shops`,
+          method: 'POST',
+          data: formattedData,
+          header: {
+            'Content-Type': 'application/json'
+          },
+          success: (res) => {
+            console.log('创建咖啡店响应:', res);
+            if (res.statusCode === 200 || res.statusCode === 201) {
+              // 请求成功
+              if (res.data && res.data.code === 0) {
+                // 刷新咖啡店列表
+                this.fetchCoffeeShopList();
+                resolve(res.data);
+              } else {
+                let errorMsg = '创建咖啡店失败';
+                if (res.data && res.data.message) {
+                  errorMsg = res.data.message;
+                }
+                reject(new Error(errorMsg));
+              }
+            } else {
+              // 服务器返回错误
+              let errorMsg = '创建咖啡店失败';
+              if (res.data && res.data.message) {
+                errorMsg = res.data.message;
+              }
+              console.error('创建咖啡店API错误:', res.statusCode, res.data);
+              reject(new Error(errorMsg));
+            }
+          },
+          fail: (err) => {
+            console.error('创建咖啡店请求失败:', err);
+            reject(err);
+          }
+        });
+      });
+    },
+    
     async fetchCoffeeShopList() {
       try {
         return new Promise((resolve, reject) => {
