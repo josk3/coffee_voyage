@@ -69,25 +69,34 @@
 - **权限**: 管理员
 
 **请求体**:
+**请求体**:
 ```json
 {
-  "name": "星巴克咖啡",                // 必填，咖啡店名称
-  "logo": "https://example.com/logo.jpg", // 必填，咖啡店logo图片URL
-  "rating": 4.5,                      // 必填，初始评分
-  "reviewCount": 0,                   // 选填，初始评价数量
-  "price": 35,                        // 必填，人均价格
-  "address": "广州市天河区天河路123号", // 选填，地址
-  "businessHours": "周一至周日 9:00-22:00", // 选填，营业时间
-  "description": "提供高品质咖啡体验", // 选填，描述
-  "images": [                         // 选填，店铺图片
+  "shopName": "LAVAZZA 拉瓦萨咖啡",         // 必填，店铺名称
+  "shopImage": "https://example.com/logo.jpg",  // 必填，店铺图片URL
+  "rating": 4.5,                          // 必填，评分(1-5)
+  "commentCount": 0,                      // 选填，评价数量
+  "averagePrice": 32,                     // 必填，人均价格
+  "images": [                             // 选填，商品图片数组
     "https://example.com/image1.jpg",
     "https://example.com/image2.jpg"
   ],
-  "initialReview": {                  // 选填，初始评价
-    "userName": "张三",               // 用户名称
-    "userAvatar": "https://example.com/avatar.jpg", // 用户头像
-    "text": "环境很好，咖啡味道不错"  // 评价内容
-  }
+  "comments": [                           // 选填，商品评价数组
+    {
+      "userName": "张三",                 // 必填，用户姓名
+      "userAvatar": "https://example.com/avatar.jpg", // 必填，用户头像
+      "content": "环境很好,服务员很热情,推荐大家来" // 必填，评价内容
+    }
+  ],
+  "recommendDishes": [                    // 选填，推荐菜品数组
+    {
+      "dishName": "冰吸生椰拿铁",         // 必填，菜品名称
+      "dishImage": "https://example.com/dish.jpg", // 必填，菜品图片
+      "price": 32,                        // 必填，菜品价格
+      "recommendIndex": 5,                // 选填，推荐指数(1-5)
+      "description": "使用优质椰浆和阿拉比卡咖啡豆制作" // 选填，菜品描述
+    }
+  ]
 }
 ```
 

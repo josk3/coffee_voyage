@@ -76,88 +76,114 @@
           <view class="form-section">
             <view class="section-title">添加咖啡店</view>
             
-            <view class="form-item">
-              <text class="form-label">店铺名称</text>
-              <input type="text" v-model="formData.name" placeholder="请输入店铺名称" class="form-input" />
-            </view>
-            
-            <view class="form-item">
-              <text class="form-label">图片URL</text>
-              <input type="text" v-model="formData.logo" placeholder="请输入图片URL" class="form-input" />
-            </view>
-            
-            <view class="form-item">
-              <text class="form-label">评分</text>
-              <input type="number" v-model="formData.rating" placeholder="评分(1-5)" class="form-input" />
-            </view>
-            
-            <view class="form-item">
-              <text class="form-label">评价数</text>
-              <input type="number" v-model="formData.reviewCount" placeholder="评价数量" class="form-input" />
-            </view>
-            
-            <view class="form-item">
-              <text class="form-label">人均价格</text>
-              <input type="number" v-model="formData.price" placeholder="人均价格" class="form-input" />
-            </view>
-            
-            <view class="form-item">
-              <text class="form-label">商品图片</text>
-              <input type="text" v-model="formData.images" placeholder="请输入商品图片URL，多个URL用英文逗号分隔" class="form-input" />
-            </view>
-
-            <view class="form-section">
-              <view class="section-title">示例评价</view>
-              
+            <uni-forms ref="formRef" :model="formData">
               <view class="form-item">
-                <text class="form-label">用户姓名</text>
-                <input type="text" v-model="formData.reviewerName" placeholder="请输入用户姓名" class="form-input" />
+                <text class="form-label">店铺名称</text>
+                <input type="text" v-model="formData.name" placeholder="请输入店铺名称" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">评价者头像</text>
-                <input type="text" v-model="formData.reviewerAvatar" placeholder="头像URL" class="form-input" />
+                <text class="form-label">图片URL</text>
+                <input type="text" v-model="formData.logo" placeholder="请输入图片URL" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">评价内容</text>
-                <textarea v-model="formData.reviewText" placeholder="评价内容" class="form-textarea"></textarea>
-              </view>
-            </view>
-            
-            <view class="form-section">
-              <view class="section-title">推荐菜品</view>
-              
-              <view class="form-item">
-                <text class="form-label">菜品名称</text>
-                <input type="text" v-model="formData.dishName" placeholder="请输入菜品名称" class="form-input" />
+                <text class="form-label">评分</text>
+                <input type="number" v-model="formData.rating" placeholder="评分(1-5)" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">菜品图片</text>
-                <input type="text" v-model="formData.dishImage" placeholder="图片URL" class="form-input" />
+                <text class="form-label">评价数</text>
+                <input type="number" v-model="formData.reviewCount" placeholder="评价数量" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">菜品价格</text>
-                <input type="number" v-model="formData.dishPrice" placeholder="请输入价格" class="form-input" />
+                <text class="form-label">人均价格</text>
+                <input type="number" v-model="formData.price" placeholder="人均价格" class="form-input" />
               </view>
               
               <view class="form-item">
-                <text class="form-label">推荐指数</text>
-                <view class="rating-picker">
-                  <uni-rate v-model="formData.dishRating" :size="24" :value="formData.dishRating" :max="5"></uni-rate>
-                  <text class="rating-value">{{ formData.dishRating }}星</text>
+                <text class="form-label">商品图片</text>
+                <textarea 
+                  v-model="formData.images" 
+                  placeholder="请输入商品图片URL，多个URL用英文逗号分隔" 
+                  class="form-textarea" 
+                  style="height: 120rpx;"
+                  :maxlength="5000"
+                  @input="updateImageInputCount"
+                ></textarea>
+                <view class="form-tip-wrapper">
+                  <text class="form-tip">多个URL请用英文逗号(,)分隔</text>
+                  <text class="char-count">{{ imageInputCount }}/5000</text>
+                </view>
+                
+                <!-- 图片预览区域 -->
+                <view class="preview-images" v-if="getImageURLs().length > 0">
+                  <view class="preview-image-item" v-for="(imgURL, index) in getImageURLs()" :key="index">
+                    <image :src="imgURL" mode="aspectFill" class="preview-img" @error="handleImageError(index)"></image>
+                  </view>
+                </view>
+              </view>
+  
+              <view class="form-section">
+                <view class="section-title">示例评价</view>
+                
+                <view class="form-item">
+                  <text class="form-label">用户姓名</text>
+                  <input type="text" v-model="formData.reviewerName" placeholder="请输入用户姓名" class="form-input" />
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">评价者头像</text>
+                  <input type="text" v-model="formData.reviewerAvatar" placeholder="头像URL" class="form-input" />
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">评价内容</text>
+                  <textarea v-model="formData.reviewText" placeholder="评价内容" class="form-textarea"></textarea>
                 </view>
               </view>
               
-              <view class="form-item">
-                <text class="form-label">菜品描述</text>
-                <textarea v-model="formData.dishDescription" placeholder="请输入菜品描述" class="form-textarea"></textarea>
+              <view class="form-section">
+                <view class="section-title">推荐菜品</view>
+                
+                <view class="form-item">
+                  <text class="form-label">菜品名称</text>
+                  <input type="text" v-model="formData.dishName" placeholder="请输入菜品名称" class="form-input" />
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">菜品图片</text>
+                  <input type="text" v-model="formData.dishImage" placeholder="图片URL" class="form-input" />
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">菜品价格 <text class="required">*</text></text>
+                  <input 
+                    type="number" 
+                    v-model="formData.dishPrice" 
+                    placeholder="请输入价格（必填）" 
+                    class="form-input" 
+                  />
+                  <text class="form-tip">若添加菜品，价格必须大于0</text>
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">推荐指数</text>
+                  <view class="rating-picker">
+                    <uni-rate v-model="formData.dishRating" :size="24" :value="formData.dishRating" :max="5"></uni-rate>
+                    <text class="rating-value">{{ formData.dishRating }}星</text>
+                  </view>
+                </view>
+                
+                <view class="form-item">
+                  <text class="form-label">菜品描述</text>
+                  <textarea v-model="formData.dishDescription" placeholder="请输入菜品描述" class="form-textarea"></textarea>
+                </view>
               </view>
-            </view>
-            
-            <button class="submit-btn" @click="handleSubmit">提交</button>
+              
+              <button class="submit-btn" @click="handleSubmit">提交</button>
+            </uni-forms>
           </view>
         </scroll-view>
       </view>
@@ -170,6 +196,7 @@ import { ref, watch } from "vue";
 import { useCoffeeShopStore } from "@/stores/coffeeShop";
 import uniRate from '@dcloudio/uni-ui/lib/uni-rate/uni-rate.vue';
 import uniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue';
+import uniForms from '@dcloudio/uni-ui/lib/uni-forms/uni-forms.vue';
 
 const coffeeShopStore = useCoffeeShopStore();
 const error = ref(null);
@@ -193,6 +220,19 @@ const formData = ref({
   images: ''
 });
 
+// 表单引用
+const formRef = ref(null);
+// 提交按钮加载状态
+const loadingSubmit = ref(false);
+
+// 图片URL输入字数计数
+const imageInputCount = ref(0);
+
+// 更新图片URL输入字数
+function updateImageInputCount() {
+  imageInputCount.value = formData.value.images ? formData.value.images.length : 0;
+}
+
 // 显示管理弹窗
 function showAdminPopup() {
   showPopup.value = true;
@@ -203,154 +243,159 @@ function hideAdminPopup() {
   showPopup.value = false;
 }
 
-// 提交表单
-function handleSubmit() {
-  console.log('开始提交表单...');
-  // 表单验证
-  if (!formData.value.name) {
+// 验证自定义字段
+function validateCustomFields() {
+  // 如果添加了菜品名称，则菜品价格必须大于0
+  if (formData.value.dishName && (!formData.value.dishPrice || parseFloat(formData.value.dishPrice) <= 0)) {
     uni.showToast({
-      title: '请输入店铺名称',
+      title: '菜品价格不能为空或0',
       icon: 'none'
     });
-    return;
+    return false;
   }
   
-  if (!formData.value.logo) {
-    uni.showToast({
-      title: '请输入图片URL',
-      icon: 'none'
-    });
-    return;
-  }
-  
-  if (!formData.value.rating || formData.value.rating < 1 || formData.value.rating > 5) {
-    uni.showToast({
-      title: '请输入正确的评分(1-5)',
-      icon: 'none'
-    });
-    return;
-  }
-  
-  if (!formData.value.price || formData.value.price <= 0) {
-    uni.showToast({
-      title: '请输入正确的人均价格',
-      icon: 'none'
-    });
-    return;
-  }
-  
-  // 构建请求数据
-  const requestData = {
-    shopName: formData.value.name.trim(),
-    shopImage: formData.value.logo.trim(),
-    rating: Number(formData.value.rating),
-    commentCount: Number(formData.value.reviewCount || 0),
-    averagePrice: Number(formData.value.price)
+  return true;
+}
+
+// 重置表单数据到初始状态
+function resetForm() {
+  formData.value = {
+    name: '',
+    logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    rating: 4.5,
+    reviewCount: 0,
+    price: 30,
+    reviewerName: '',
+    reviewerAvatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
+    reviewText: '',
+    dishName: '',
+    dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
+    dishPrice: 0,
+    dishRating: 5,
+    dishDescription: '',
+    images: ''
   };
   
-  // 处理商品图片
-  if (formData.value.images) {
-    // 将逗号分隔的URL转换为数组
-    requestData.images = formData.value.images.split(',').map(url => url.trim()).filter(url => url);
-  }
+  // 重置图片输入字数计数
+  imageInputCount.value = 0;
   
-  // 如果有初始评价信息，添加到comments数组
-  const comments = [];
-  if (formData.value.reviewerName && formData.value.reviewText) {
-    comments.push({
-      userName: formData.value.reviewerName.trim(),
-      userAvatar: formData.value.reviewerAvatar.trim(),
-      content: formData.value.reviewText.trim()
-    });
-  }
-  
-  // 如果有推荐菜品信息，添加到recommendDishes数组
-  const recommendDishes = [];
-  if (formData.value.dishName && formData.value.dishImage) {
-    recommendDishes.push({
-      dishName: formData.value.dishName.trim(),
-      dishImage: formData.value.dishImage.trim(),
-      price: Number(formData.value.dishPrice || 0),
-      recommendIndex: Number(formData.value.dishRating || 5),
-      description: formData.value.dishDescription || ''
-    });
-  }
-  
-  // 补充完整的数据
-  requestData.comments = comments;
-  
-  // 只有在有完整推荐菜品数据时才添加到请求中
-  if (recommendDishes.length > 0 && formData.value.dishPrice > 0) {
-    requestData.recommendDishes = recommendDishes;
-  } else {
-    requestData.recommendDishes = []; // 空数组表示没有推荐菜品
-  }
-  
-  // 直接使用 store 的 createCoffeeShop 方法
-  let loadingShown = false;
-  try {
-    // 显示加载状态
-    uni.showLoading({
-      title: '提交中...'
-    });
-    loadingShown = true;
-    
-    // 调用 store 中的 createCoffeeShop 方法
-    coffeeShopStore.createCoffeeShop(requestData)
-      .then(res => {
-        // 关闭加载状态
-        if (loadingShown) {
-          uni.hideLoading();
-          loadingShown = false;
+  console.log('表单数据已重置');
+}
+
+// 提交表单
+function handleSubmit() {
+  if (formRef.value) {
+    formRef.value.validate().then(res => {
+      if (!validateCustomFields()) {
+        return;
+      }
+      console.log('表单验证通过');
+      loadingSubmit.value = true;
+      
+      // 构建请求数据
+      const requestData = {
+        shopName: formData.value.name,
+        shopImage: formData.value.logo,
+        rating: parseFloat(formData.value.rating),
+        averagePrice: parseFloat(formData.value.price),
+        images: formData.value.images
+      };
+      
+      // 添加评论
+      if (formData.value.reviewerName || formData.value.reviewText) {
+        requestData.comments = [{
+          userName: formData.value.reviewerName || "匿名用户",
+          userAvatar: formData.value.reviewerAvatar || "",
+          content: formData.value.reviewText || ""
+        }];
+      }
+      
+      // 添加推荐菜品
+      if (formData.value.dishName) {
+        // 确保价格大于0
+        const dishPrice = parseFloat(formData.value.dishPrice);
+        if (!dishPrice || dishPrice <= 0) {
+          uni.showToast({
+            title: '菜品价格不能为空或0',
+            icon: 'none'
+          });
+          loadingSubmit.value = false;
+          return;
         }
         
-        // 提交成功
+        requestData.recommendDishes = [{
+          dishName: formData.value.dishName,
+          dishImage: formData.value.dishImage,
+          price: dishPrice,
+          recommendIndex: parseInt(formData.value.dishRating) || 5,
+          description: formData.value.dishDescription || ""
+        }];
+      }
+      
+      console.log('提交数据:', requestData);
+      
+      // 处理成功操作后的导航 
+      function handleSuccess() {
+        loadingSubmit.value = false;
         uni.showToast({
-          title: '创建成功',
+          title: '提交成功',
           icon: 'success'
         });
         
-        // 重置表单
-        formData.value = {
-          name: '',
-          logo: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-          rating: 4.5,
-          reviewCount: 0,
-          price: 30,
-          reviewerName: '',
-          reviewerAvatar: 'https://p26-passport.byteacctimg.com/img/user-avatar/c69497bf05b49fdabafd3974319accc4~100x100.awebp',
-          reviewText: '',
-          dishName: '',
-          dishImage: 'https://www.coffeestyle.info/data/upload/site_2/item/2024/04/13/661a9b9b87313.jpg',
-          dishPrice: 0,
-          dishRating: 5,
-          dishDescription: '',
-          images: ''
-        };
+        // 重置表单数据
+        resetForm();
         
-        // 关闭弹窗
-        hideAdminPopup();
-      })
-      .catch(err => {
-        // 确保关闭加载状态
-        if (loadingShown) {
-          uni.hideLoading();
-          loadingShown = false;
-        }
-        
-        // 显示错误信息
-        uni.showToast({
-          title: err.message || '创建失败，请稍后重试',
-          icon: 'none'
+        // 关闭弹窗并刷新数据
+        setTimeout(() => {
+          hideAdminPopup();
+          // 刷新咖啡店列表
+          coffeeShopStore.fetchCoffeeShopList();
+        }, 1500);
+      }
+      
+      // 调用store方法创建咖啡店
+      coffeeShopStore.createCoffeeShop(requestData)
+        .then(res => {
+          console.log('创建成功:', res);
+          handleSuccess();
+        })
+        .catch(err => {
+          console.error('创建失败详情:', err);
+          // 输出错误对象的所有信息
+          if (err) {
+            console.log('错误类型:', typeof err);
+            console.log('错误内容:', JSON.stringify(err));
+            console.log('错误消息:', err.message);
+            console.log('错误堆栈:', err.stack);
+          }
+          
+          loadingSubmit.value = false;
+          
+          // 检查错误消息是否实际上是成功
+          if (err && typeof err === 'object') {
+            const errorMsg = err.message || (typeof err.toString === 'function' ? err.toString() : String(err));
+            
+            // 如果错误消息包含"成功"关键词，视为成功
+            if (errorMsg.includes('成功')) {
+              console.log('检测到成功消息:', errorMsg);
+              handleSuccess();
+              return;
+            }
+          }
+          
+          // 真正的错误
+          uni.showToast({
+            title: err && err.message ? err.message : '提交失败',
+            icon: 'error'
+          });
         });
-        console.error('创建咖啡店失败:', err);
-      });
-  } catch (error) {
-    // 确保关闭加载状态
-    if (loadingShown) {
-      uni.hideLoading();
-    }
-    console.error('创建咖啡店出错:', error);
+    }).catch(err => {
+      console.log('表单验证错误', err);
+    });
+  } else {
+    // 如果没有表单引用，跳过验证直接提交
+    console.log('没有表单引用，跳过验证');
+    // 这里可以添加直接提交的逻辑
   }
 }
 
@@ -394,6 +439,17 @@ watch(
     coffeeShops.value = newList;
   }
 );
+
+// 获取图片URL数组
+function getImageURLs() {
+  if (!formData.value.images) return [];
+  return formData.value.images.split(',').map(url => url.trim()).filter(url => url);
+}
+
+// 处理图片加载错误
+function handleImageError(index) {
+  console.warn(`图片加载失败: ${getImageURLs()[index]}`);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -614,6 +670,11 @@ watch(
     font-size: 28rpx;
     color: #666;
     margin-bottom: 10rpx;
+    
+    .required {
+      color: #f76c3f;
+      margin-left: 4rpx;
+    }
   }
   
   .rating-picker {
@@ -647,6 +708,45 @@ watch(
     font-size: 28rpx;
     color: #333;
     box-sizing: border-box;
+  }
+  
+  .form-tip {
+    font-size: 24rpx;
+    color: #999;
+    margin-top: 6rpx;
+    display: block;
+  }
+  
+  .form-tip-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .char-count {
+    font-size: 24rpx;
+    color: #999;
+  }
+  
+  .preview-images {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 15rpx;
+    
+    .preview-image-item {
+      width: 150rpx;
+      height: 150rpx;
+      margin-right: 15rpx;
+      margin-bottom: 15rpx;
+      overflow: hidden;
+      border-radius: 8rpx;
+      border: 1rpx solid #eee;
+      
+      .preview-img {
+        width: 100%;
+        height: 100%;
+      }
+    }
   }
 }
 

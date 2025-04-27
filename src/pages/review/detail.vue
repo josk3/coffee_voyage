@@ -3,7 +3,7 @@
     <!-- 轮播图部分 -->
     <swiper class="swiper" :indicator-dots="true" indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#ffffff" autoplay>
       <swiper-item v-for="(img, index) in shopDetail.images" :key="index">
-        <image :src="img" mode="aspectFill" class="swiper-img" @click="handleImageClick(index)"></image>
+        <image :src="img" mode="aspectFit" class="swiper-img" @click="handleImageClick(index)"></image>
       </swiper-item>
     </swiper>
     
@@ -394,6 +394,10 @@ const viewRecommendDetail = (item) => {
   .swiper-img {
     width: 100%;
     height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
   }
 }
 

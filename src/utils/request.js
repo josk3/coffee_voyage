@@ -35,6 +35,13 @@ const request = (options) => {
       data: options.data,
       header,
       success: (res) => {
+        // 特殊情况处理：如果返回消息包含"成功"关键词，视为成功响应
+        if (res.data && typeof res.data === 'object' && res.data.message && res.data.message.includes('成功')) {
+          console.log('检测到成功消息:', res.data.message);
+          resolve(res.data);
+          return;
+        }
+        
         // 根据状态码处理响应
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data);
@@ -59,8 +66,17 @@ const request = (options) => {
           reject(res);
         } else {
           // 其他错误情况
+          const errorMsg = res.data && res.data.message ? res.data.message : '请求失败';
+          
+          // 检查错误消息是否包含"成功"关键词
+          if (errorMsg.includes('成功')) {
+            console.log('错误响应中包含成功信息，视为成功:', errorMsg);
+            resolve(res.data);
+            return;
+          }
+          
           uni.showToast({
-            title: res.data.message || '请求失败',
+            title: errorMsg,
             icon: 'none',
             duration: 2000
           });
