@@ -8,6 +8,11 @@
         :key="index"
         @click="handleShopClick(item)"
       >
+        <!-- 删除按钮 -->
+        <view class="delete-btn" @click.stop="handleDeleteItem(item, index)">
+          <uni-icons type="trash" size="18" color="#ff5a5f"></uni-icons>
+        </view>
+        
         <!-- 咖啡店logo -->
         <view class="coffee-logo">
           <image :src="item.logo" mode="aspectFill" class="logo-image"></image>
@@ -450,6 +455,12 @@ function getImageURLs() {
 function handleImageError(index) {
   console.warn(`图片加载失败: ${getImageURLs()[index]}`);
 }
+
+function handleDeleteItem(item, index) {
+  // 实现删除逻辑
+  console.log('删除咖啡店项目:', item.name, '- ID:', item._id);
+  coffeeShopStore.deleteCoffeeShop(item._id);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -470,6 +481,27 @@ function handleImageError(index) {
   margin-bottom: 20rpx;
   border-radius: 10rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 10rpx;
+  right: 10rpx;
+  padding: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  z-index: 10;
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+  
+  &:active {
+    background-color: rgba(255, 90, 95, 0.1);
+  }
 }
 
 .coffee-logo {

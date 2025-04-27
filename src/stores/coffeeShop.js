@@ -413,6 +413,86 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           }
         });
       });
+    },
+    // 删除咖啡店方法
+    deleteCoffeeShop(coffeeShopId) {
+      if (!coffeeShopId) {
+        uni.showToast({
+          title: '缺少商店ID',
+          icon: 'none'
+        });
+        return Promise.reject(new Error('缺少商店ID'));
+      }
+      
+      return new Promise((resolve, reject) => {
+        uni.showModal({
+          title: '确认删除',
+          content: '确定要删除这个咖啡店吗？此操作不可恢复。',
+          success: (res) => {
+            if (res.confirm) {
+              // 用户点击确定，执行删除操作
+              uni.showLoading({
+                title: '删除中...',
+                mask: true
+              });
+              
+              // 发送删除请求
+              uni.request({
+                url: `${BASE_API_URL}/coffee-shops/${coffeeShopId}`,
+                method: 'DELETE',
+                success: (res) => {
+                  if (res.statusCode === 200) {
+                    // 从本地列表中删除
+                    const index = this.list.findIndex(item => 
+                      (item._id && item._id === coffeeShopId) || 
+                      (item.id && item.id === coffeeShopId)
+                    );
+                    
+                    if (index !== -1) {
+                      this.list.splice(index, 1);
+                    }
+                    
+                    uni.showToast({
+                      title: '删除成功',
+                      icon: 'success'
+                    });
+                    
+                    resolve(true);
+                  } else {
+                    let errorMsg = '删除失败';
+                    if (res.data && res.data.message) {
+                      errorMsg = res.data.message;
+                    }
+                    
+                    uni.showToast({
+                      title: errorMsg,
+                      icon: 'none'
+                    });
+                    
+                    reject(new Error(errorMsg));
+                  }
+                },
+                fail: (err) => {
+                  console.error('删除咖啡店请求失败:', err);
+                  
+                  uni.showToast({
+                    title: '网络错误，请稍后重试',
+                    icon: 'none'
+                  });
+                  
+                  reject(err);
+                },
+                complete: () => {
+                  uni.hideLoading();
+                }
+              });
+            } else {
+              // 用户点击取消，不执行删除
+              resolve(false);
+            }
+          }
+        });
+      });
     }
   }
 }); 
