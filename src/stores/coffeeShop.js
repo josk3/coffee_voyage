@@ -298,91 +298,52 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
     },
     // 删除评论的方法
     async deleteReview(shopId, reviewId) {
+      if (!shopId || !reviewId) {
+        throw new Error('店铺ID和评价ID不能为空');
+      }
+
       return new Promise((resolve, reject) => {
-        if (!shopId || !reviewId) {
-          reject(new Error('删除评价需要有效的shopId和reviewId'));
-          return;
-        }
-        
-        uni.showLoading({
-          title: '删除中...',
-          mask: true
-        });
-        
         uni.request({
-          url: `${BASE_API_URL}/coffee-shops/${shopId}/reviews/${reviewId}`,
+          url: `${this.baseApiUrl}/coffee-shops/${shopId}/reviews/${reviewId}`,
           method: 'DELETE',
           success: (res) => {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
-              // 从store中删除评论
+              // 从 store 中移除该评价
               this.removeReviewFromStore(reviewId);
-              
-              // 如果咖啡店详情中有评论，也更新详情中的评论
-              if (this.detail && this.detail.reviews) {
-                const reviewIndex = this.detail.reviews.findIndex(
-                  r => (r._id && r._id === reviewId) || (r.id && r.id === reviewId)
-                );
-                if (reviewIndex !== -1) {
-                  this.detail.reviews.splice(reviewIndex, 1);
-                  
-                  // 更新评论数
-                  if (this.detail.reviewCount !== undefined) {
-                    this.detail.reviewCount = Math.max(0, this.detail.reviewCount - 1);
-                  }
-                }
-              }
-              
-              uni.showToast({
-                title: '删除成功',
-                icon: 'success'
-              });
-              
-              // 触发全局事件，通知其他页面刷新
-              uni.$emit('refreshShopDetail', {
-                shopId: shopId,
-                timestamp: Date.now()
-              });
-              
               resolve(res.data);
             } else {
-              let errorMsg = '删除失败';
-              if (res.data && (res.data.message || res.data.msg)) {
-                errorMsg = res.data.message || res.data.msg;
-              }
-              
-              uni.showToast({
-                title: errorMsg,
-                icon: 'none'
-              });
-              
-              reject(new Error(errorMsg));
+              const errMsg = (res.data && res.data.message) ? res.data.message : '删除失败';
+              reject(new Error(errMsg));
             }
           },
           fail: (err) => {
-            console.error('删除评价失败:', err);
-            uni.showToast({
-              title: '网络错误，请稍后重试',
-              icon: 'none'
-            });
-            
-            reject(err);
-          },
-          complete: () => {
-            uni.hideLoading();
+            console.error('删除评价请求失败:', err);
+            reject(new Error('网络错误，请稍后重试'));
           }
         });
       });
     },
     // 从store中删除评论
     removeReviewFromStore(reviewId) {
-      if (!this.reviews || !this.reviews.length) return;
+      if (!reviewId) return;
       
-      const index = this.reviews.findIndex(
-        review => (review._id && review._id === reviewId) || (review.id && review.id === reviewId)
-      );
+      // 从 reviews 数组中移除
+      this.reviews = this.reviews.filter(review => {
+        const id = review._id || review.id;
+        return id !== reviewId;
+      });
       
-      if (index !== -1) {
-        this.reviews.splice(index, 1);
+      // 如果当前查看的是店铺详情，也需要从详情中移除该评价
+      if (this.detail && this.detail.reviews) {
+        this.detail.reviews = this.detail.reviews.filter(review => {
+          const id = review._id || review.id;
+          return id !== reviewId;
+        });
+        
+        // 更新评论数
+        if (this.detail.reviewCount !== undefined) {
+          this.detail.reviewCount = Math.max(0, this.detail.reviewCount - 1);
+        }
       }
     },
     // 工具方法：格式化日期

@@ -127,7 +127,7 @@ const confirmDelete = (review, index) => {
 };
 
 // 删除评价
-const deleteReview = (review, index) => {
+const deleteReview = async (review, index) => {
   // 获取评论ID
   const reviewId = review._id || review.id;
   
@@ -163,48 +163,38 @@ const deleteReview = (review, index) => {
     mask: true
   });
   
-  // 直接发送删除请求，不通过store
-  uni.request({
-    url: `${baseUrl}/coffee-shops/${shopId.value}/reviews/${reviewId}`,
-    method: 'DELETE',
-    success: (res) => {
-      if (res.statusCode === 200 && res.data && res.data.code === 0) {
-        // 删除成功后，直接更新当前列表，不借助store
-        reviews.value = reviews.value.filter(item => {
-          const itemId = item._id || item.id;
-          return itemId !== reviewId;
-        });
-        
-        uni.showToast({
-          title: '删除成功',
-          icon: 'success'
-        });
-      } else {
-        const errMsg = (res.data && res.data.message) ? res.data.message : '删除失败';
-        uni.showToast({
-          title: errMsg,
-          icon: 'none'
-        });
-        
-        // 删除失败时，从已删除集合中移除该ID
-        deletedReviewIds.value.delete(reviewId);
-      }
-    },
-    fail: (err) => {
-      console.error('删除评价请求失败:', err);
-      uni.showToast({
-        title: '网络错误，请稍后重试',
-        icon: 'none'
-      });
-      
-      // 删除失败时，从已删除集合中移除该ID
-      deletedReviewIds.value.delete(reviewId);
-    },
-    complete: () => {
-      uni.hideLoading();
-      isDeleting.value = false;
-    }
-  });
+  try {
+    await coffeeShopStore.deleteReview(shopId.value, reviewId);
+    
+    // 删除成功后，直接更新当前列表
+    reviews.value = reviews.value.filter(item => {
+      const itemId = item._id || item.id;
+      return itemId !== reviewId;
+    });
+    
+    // 触发全局事件，通知其他页面刷新店铺详情
+    uni.$emit('refreshShopDetail', {
+      shopId: shopId.value,
+      timestamp: Date.now()
+    });
+    
+    uni.showToast({
+      title: '删除成功',
+      icon: 'success'
+    });
+  } catch (error) {
+    console.error('删除评价失败:', error);
+    uni.showToast({
+      title: error.message || '删除失败',
+      icon: 'none'
+    });
+    
+    // 删除失败时，从已删除集合中移除该ID
+    deletedReviewIds.value.delete(reviewId);
+  } finally {
+    uni.hideLoading();
+    isDeleting.value = false;
+  }
 };
 
 // 从服务器获取评价数据

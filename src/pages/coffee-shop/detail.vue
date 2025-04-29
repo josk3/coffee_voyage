@@ -185,6 +185,14 @@ export default {
   onLoad(options) {
     this.shopId = options.id;
     this.loadData();
+    
+    // 监听刷新店铺详情事件
+    uni.$on('refreshShopDetail', this.handleRefreshShopDetail);
+  },
+  
+  onUnload() {
+    // 移除事件监听
+    uni.$off('refreshShopDetail', this.handleRefreshShopDetail);
   },
   
   methods: {
@@ -312,6 +320,29 @@ export default {
         content: '',
         images: []
       };
+    },
+    
+    // 处理刷新店铺详情事件
+    async handleRefreshShopDetail(data) {
+      if (data.shopId === this.shopId) {
+        try {
+          this.showLoading();
+          await Promise.all([
+            this.fetchCoffeeShopDetail(this.shopId),
+            this.fetchCoffeeShopReviews({
+              shopId: this.shopId,
+              params: {
+                page: 1,
+                limit: this.limit
+              }
+            })
+          ]);
+        } catch (error) {
+          console.error('刷新店铺详情失败:', error);
+        } finally {
+          this.hideLoading();
+        }
+      }
     }
   }
 };
