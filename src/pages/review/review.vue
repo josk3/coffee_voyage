@@ -15,7 +15,7 @@
         
         <!-- 咖啡店logo -->
         <view class="coffee-logo">
-          <image :src="item.logo" mode="aspectFill" class="logo-image"></image>
+          <image :src="item.logo" mode="aspectFill" class="logo-image" @error="handleLogoError(item, index)"></image>
         </view>
 
         <!-- 咖啡店信息 -->
@@ -459,6 +459,13 @@ function getImageURLs() {
 // 处理图片加载错误
 function handleImageError(index) {
   console.warn(`图片加载失败: ${getImageURLs()[index]}`);
+}
+
+// 处理Logo图片加载错误
+function handleLogoError(item, index) {
+  console.warn(`Logo加载失败: ${item.logo}`);
+  // 设置默认图片
+  coffeeShops.value[index].logo = '/src/static/logo.png';
 }
 
 function handleDeleteItem(item, index) {

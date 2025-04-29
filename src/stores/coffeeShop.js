@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import { nextTick } from 'vue';
 
 // 基础API URL
-// const BASE_API_URL = ' http://rgmevy.natappfree.cc/api';
-const BASE_API_URL = 'http://localhost:3000/api';
+const BASE_API_URL = 'http://coffee-voyage.natapp1.cc/api';
+// const BASE_API_URL = 'http://localhost:3000/api';
 
 export const useCoffeeShopStore = defineStore('coffeeShop', {
   state: () => ({
