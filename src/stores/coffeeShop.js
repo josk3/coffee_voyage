@@ -310,6 +310,22 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
             if (res.statusCode === 200 && res.data && res.data.code === 0) {
               // 从 store 中移除该评价
               this.removeReviewFromStore(reviewId);
+              
+              // 更新店铺评分
+              if (this.detail && this.detail.reviews) {
+                const remainingReviews = this.detail.reviews.filter(review => {
+                  const id = review._id || review.id;
+                  return id !== reviewId;
+                });
+                
+                if (remainingReviews.length > 0) {
+                  const totalRating = remainingReviews.reduce((sum, review) => sum + review.rating, 0);
+                  this.detail.rating = totalRating / remainingReviews.length;
+                } else {
+                  this.detail.rating = 5; // 如果没有评价了，恢复默认评分
+                }
+              }
+              
               resolve(res.data);
             } else {
               const errMsg = (res.data && res.data.message) ? res.data.message : '删除失败';
@@ -510,6 +526,25 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           fail: (err) => {
             console.error('添加推荐菜请求失败:', err);
             reject(new Error('网络请求失败'));
+          }
+        });
+      });
+    },
+    async fetchShopInfo(id) {
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: `${this.baseApiUrl}/coffee-shops/${id}`,
+          method: 'GET',
+          success: (res) => {
+            if(res.statusCode === 200 && res.data.success) {
+              resolve(res.data.data);
+            } else {
+              reject(new Error(res.data.message || '获取商店信息失败'));
+            }
+          },
+          fail: (err) => {
+            console.error('获取商店信息失败:', err);
+            reject(err);
           }
         });
       });

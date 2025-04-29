@@ -69,7 +69,6 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from 'vue';
-// import { categoryAPI, courseAPI } from '@/api/index';
 
 // 响应式状态
 const categoryList = ref([]);

@@ -231,24 +231,6 @@ const addToCart = (item) => {
     title: '已加入购物车',
     icon: 'success'
   });
-  
-  // 实际逻辑：调用后端API添加商品到购物车
-  // uni.request({
-  //   url: 'https://api.example.com/cart/add',
-  //   method: 'POST',
-  //   data: {
-  //     productId: item.id,
-  //     quantity: 1
-  //   },
-  //   success: (res) => {
-  //     if (res.data.success) {
-  //       uni.showToast({
-  //         title: '已加入购物车',
-  //         icon: 'success'
-  //       });
-  //     }
-  //   }
-  // });
 };
 
 // 搜索

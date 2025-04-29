@@ -89,9 +89,6 @@ const isDeleting = ref(false);
 // 从store获取数据
 const coffeeShopStore = useCoffeeShopStore();
 
-// API基础URL
-const baseUrl = coffeeShopStore.baseApiUrl || 'http://localhost:3000/api';
-
 // 已经删除过的评价ID集合，避免重复删除
 const deletedReviewIds = ref(new Set());
 
@@ -224,7 +221,7 @@ const fetchReviews = (id) => {
 };
 
 // 从服务器获取咖啡店信息
-const fetchShopInfo = (id) => {
+const fetchShopInfo = async (id) => {
   // 如果store中已有详情数据，直接使用
   if (coffeeShopStore.detail) {
     shopName.value = coffeeShopStore.detail.name;
@@ -232,24 +229,14 @@ const fetchShopInfo = (id) => {
   }
   
   // 否则请求新数据
-  return new Promise((resolve, reject) => {
-    uni.request({
-      url: `${baseUrl}/coffee-shops/${id}`,
-      method: 'GET',
-      success: (res) => {
-        if(res.statusCode === 200 && res.data.success) {
-          shopName.value = res.data.data.name;
-          resolve(res.data.data);
-        } else {
-          reject(new Error(res.data.message || '获取商店信息失败'));
-        }
-      },
-      fail: (err) => {
-        console.error('获取商店信息失败:', err);
-        reject(err);
-      }
-    });
-  });
+  try {
+    const shopInfo = await coffeeShopStore.fetchShopInfo(id);
+    shopName.value = shopInfo.name;
+    return shopInfo;
+  } catch (error) {
+    console.error('获取商店信息失败:', error);
+    throw error;
+  }
 };
 
 onMounted(() => {
