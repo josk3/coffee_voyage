@@ -54,10 +54,10 @@
       
       <!-- 大师卡片 -->
       <view class="master-card" @click="handleMasterCardClick">
-        <image class="master-avatar" src="https://pro.upload.logomaker.com.cn/2023/07/26/2307260649197721.jpg" mode="aspectFill"></image>
+        <image class="master-avatar" src="https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/咖啡老师照.jpg" mode="aspectFill"></image>
         <view class="master-info">
-          <view class="master-title">中式烹饪合集</view>
-          <view class="master-desc">周良存大师是一位拥有丰富经验的资深级中国烹饪大师，上海市首席技师。</view>
+          <view class="master-title">咖啡集合</view>
+          <view class="master-desc">朱琪鸣大师是一位拥有丰富经验的资深级咖啡主理人，澳门食品商会咖啡会员。</view>
         </view>
       </view>
     </view>
@@ -67,9 +67,9 @@
 <script setup>
 import { ref } from 'vue';
 const images = ref([
-  'https://pro.upload.logomaker.com.cn/2023/07/26/2307260649197721.jpg',
-  'https://pro.upload.logomaker.com.cn/2023/07/26/2307260649197721.jpg',
-  'https://pro.upload.logomaker.com.cn/2023/07/26/2307260649197721.jpg'
+  'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/lunbo1.jpg',
+  'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/lunbo2.jpg',
+  'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/lunbo3.jpg'
 ]);
 const total = images.value.length;
 const currentIndex = ref(1);
@@ -77,18 +77,16 @@ const onChange = e => { currentIndex.value = e.detail.current + 1; };
 const handleImageClick = idx => { console.log(`点击了第${idx}张图片`); };
 
 const handleMoreClick = () => { 
-  uni.navigateTo({
-    url: '/pages/index/product-group'
-  });
+  console.log('点击了更多');
 };
 
 const categories = ref([
-  { id: 8, name: '西式面点课程', img: images.value[0] },
-  { id: 7, name: '中式面点课程', img: images.value[0] },
-  { id: 6, name: '中式烹调课程', img: images.value[0] },
-  { id: 5, name: '茶艺师课程', img: images.value[0] },
-  { id: 9, name: '咖啡师课程', img: images.value[0] },
-  { id: 3, name: '西式烹调课程', img: images.value[0] }
+  { id: 8, name: '西式面点课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/西式面点.jpg' },
+  { id: 7, name: '中式面点课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/中式面点.jpg' },
+  { id: 6, name: '中式烹调课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/中烹.jpg' },
+  { id: 5, name: '茶艺师课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/茶艺.jpg' },
+  { id: 9, name: '咖啡师课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/咖啡课程.jpg' },
+  { id: 3, name: '西式烹调课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/西餐.jpg' }
 ]);
 const handleCategoryClick = cat => { 
   uni.navigateTo({
