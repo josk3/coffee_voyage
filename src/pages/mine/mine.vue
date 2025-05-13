@@ -14,7 +14,7 @@
       <!-- 登录文本区域 -->
       <view class="login-info">
         <view class="login-text">{{ nickname }}</view>
-        <view class="login-desc">登录更精彩</view>
+        <view v-if="!isLoggedIn" class="login-desc">登录更精彩</view>
       </view>
 
       <!-- 个人主页箭头 -->

@@ -29,10 +29,10 @@
           <text class="nav-separator">|</text>
           <text class="nav-item">全面</text>
         </view>
-        <text class="more" @click="handleMoreClick">更多 ></text>
+        <!-- <text class="more" @click="handleMoreClick">更多 ></text> -->
       </view>
       <view class="course-grid">
-        <view class="course-card" v-for="(cat, idx) in categories" :key="idx" @click="handleCategoryClick(cat)">
+        <view class="course-card" v-for="(cat, idx) in categories" :key="idx" @click="handleCategoryClick">
           <view class="card-inner">
             <view class="card-image-wrapper">
               <image :src="cat.img" class="card-image" mode="aspectFill" />
@@ -76,9 +76,11 @@ const currentIndex = ref(1);
 const onChange = e => { currentIndex.value = e.detail.current + 1; };
 const handleImageClick = idx => { console.log(`点击了第${idx}张图片`); };
 
-const handleMoreClick = () => { 
-  console.log('点击了更多');
-};
+function handleMoreClick() {
+  uni.navigateTo({
+    url: '/pages/index/course-list'
+  });
+}
 
 const categories = ref([
   { id: 8, name: '西式面点课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/西式面点.jpg' },
@@ -88,10 +90,8 @@ const categories = ref([
   { id: 9, name: '咖啡师课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/咖啡课程.jpg' },
   { id: 3, name: '西式烹调课程', img: 'https://mp-e9db93bd-d680-4781-9b05-0efa289ba320.cdn.bspapp.com/西餐.jpg' }
 ]);
-const handleCategoryClick = cat => { 
-  uni.navigateTo({
-    url: `/pages/index/product-group?categoryId=${cat.id}`
-  });
+const handleCategoryClick = () => { 
+  console.log('点击了图片');
 };
 
 // 大师卡片点击事件

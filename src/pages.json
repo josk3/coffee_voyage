@@ -68,7 +68,13 @@
     },
     {
       "path": "pages/review/search"
-		}
+    },
+    {
+      "path": "pages/index/course-list",
+      "style": {
+        "navigationBarTitleText": "课程分类"
+      }
+    }
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
