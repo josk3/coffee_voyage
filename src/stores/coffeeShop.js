@@ -548,6 +548,78 @@ export const useCoffeeShopStore = defineStore('coffeeShop', {
           }
         });
       });
+    },
+    // 添加咖啡店评论
+    async addCoffeeShopReview(shopId, data) {
+      if (!shopId) {
+        return Promise.reject(new Error('缺少商店ID'));
+      }
+
+      // 先取出rating值并确保是有效数字
+      let rating = 5; // 默认评分
+      if (data.data?.rating !== undefined) {
+        rating = parseFloat(data.data.rating);
+      } else if (data.rating !== undefined) {
+        rating = parseFloat(data.rating);
+      }
+      
+      // 检查rating是否是NaN，如果是则使用默认值
+      if (isNaN(rating)) {
+        rating = 5;
+      }
+      
+      // 确保rating在合法范围内
+      rating = Math.max(1, Math.min(5, rating));
+
+      // 确保数据符合接口要求结构
+      const formattedData = {
+        userName: data.data?.userName || data.userName || "",
+        userAvatar: data.data?.userAvatar || data.userAvatar || "",
+        content: data.data?.content || data.content || "",
+        rating: rating,
+        images: data.data?.images || data.images || []
+      };
+      
+      // 确保必填字段不为空
+      if (!formattedData.userName) {
+        return Promise.reject(new Error("用户名不能为空"));
+      }
+      
+      if (!formattedData.userAvatar) {
+        return Promise.reject(new Error("用户头像不能为空"));
+      }
+      
+      if (!formattedData.content) {
+        return Promise.reject(new Error("评价内容不能为空"));
+      }
+      
+      console.log(`提交评价到商店 ${shopId}，数据:`, JSON.stringify(formattedData));
+      
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: `${this.baseApiUrl}/coffee-shops/${shopId}/reviews`,
+          method: 'POST',
+          data: formattedData,
+          header: {
+            'Content-Type': 'application/json'
+          },
+          success: (res) => {
+            console.log('评价提交响应:', res);
+            if (res.statusCode >= 200 && res.statusCode < 300) {
+              // 刷新评论列表
+              this.fetchShopReviews(shopId);
+              resolve(res.data);
+            } else {
+              const errMsg = (res.data && res.data.message) || '提交评价失败';
+              reject(new Error(errMsg));
+            }
+          },
+          fail: (err) => {
+            console.error('评价提交请求失败:', err);
+            reject(new Error('网络请求失败'));
+          }
+        });
+      });
     }
   }
 }); 

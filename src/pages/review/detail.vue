@@ -52,7 +52,7 @@
       </view>
       
       <!-- 显示最多3条评论 -->
-      <view class="review-item" v-for="(review, index) in shopDetail.reviews.slice(0, 3)" :key="index">
+      <view class="review-item" v-for="(review, index) in shopDetail.reviews" :key="index">
         <view class="reviewer-info">
           <image :src="review.avatar" class="reviewer-avatar" @click="viewUserProfile(review)"></image>
           <view class="reviewer-meta">
@@ -90,10 +90,10 @@
       </view>
       
       <!-- 当评论数量超过3条时，在底部显示查看全部按钮 -->
-      <view class="view-more-reviews" v-if="shopDetail.reviews && shopDetail.reviews.length > 3" @click="viewAllReviews">
+      <!-- <view class="view-more-reviews" v-if="shopDetail.reviews && shopDetail.reviews.length > 3" @click="viewAllReviews">
         <text>查看全部{{ shopDetail.reviewCount }}条评价</text>
         <uni-icons type="right" size="14" color="#666"></uni-icons>
-      </view>
+      </view> -->
     </view>
     
     <!-- 底部操作栏 -->

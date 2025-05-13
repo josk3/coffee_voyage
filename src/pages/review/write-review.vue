@@ -70,7 +70,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { addCoffeeShopReview } from '@/api/coffeeShop';
+import { useCoffeeShopStore } from '@/stores/coffeeShop';
+
+// 获取咖啡店store
+const coffeeShopStore = useCoffeeShopStore();
 
 // 店铺信息
 const shopName = ref('');
@@ -82,9 +85,6 @@ const uploadedImages = ref([]);
 const isAnonymous = ref(false);
 const rating = ref(5); // 默认评分为5星
 const userInfo = ref(null); // 用户信息
-
-// API基础URL
-const baseUrl = 'http://localhost:3000/api';
 
 // 上传中图片的数量
 const uploadingCount = ref(0);
@@ -249,8 +249,8 @@ const handlePublish = () => {
     mask: true
   });
   
-  // 使用封装好的API提交评价
-  addCoffeeShopReview(shopId.value, reviewData)
+  // 使用store中的方法提交评价
+  coffeeShopStore.addCoffeeShopReview(shopId.value, reviewData)
     .then(res => {
       console.log('评价提交响应:', res);
       
